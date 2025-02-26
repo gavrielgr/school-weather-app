@@ -27,104 +27,289 @@
             color: var(--text);
             font-size: 18px;
             line-height: 1.6;
+            padding-bottom: 30px;
         }
         
         .container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
         }
         
         header {
             background-color: var(--primary);
             color: white;
-            padding: 20px;
+            padding: 25px 20px;
             border-radius: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
         
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 2.3rem;
+            margin-bottom: 5px;
         }
         
         .mascot {
-            max-width: 150px;
+            max-width: 130px;
             margin: 10px auto;
             display: block;
+            animation: bob 3s infinite ease-in-out;
+        }
+        
+        @keyframes bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
         
         .location-badge {
             background-color: white;
             color: var(--primary);
-            padding: 8px 15px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 30px;
             display: inline-block;
-            margin-top: 10px;
+            margin-top: 15px;
             font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            font-size: 1.1rem;
         }
         
         .loading {
             text-align: center;
             margin: 40px 0;
-            padding: 20px;
+            padding: 30px 20px;
             background-color: white;
             border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
         
         .loading img {
             width: 80px;
+            animation: spin 2s infinite linear;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .result {
             display: none;
             background-color: white;
             border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 0;
+            margin-top: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
         }
         
         .weather-info {
             text-align: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: var(--accent);
-            border-radius: 10px;
+            padding: 25px 15px;
+            position: relative;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .weather-info::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.85);
+            z-index: -1;
+            transition: all 0.5s;
+        }
+        
+        .weather-info.clear::before {
+            background-image: url('https://images.unsplash.com/photo-1579027989536-b7b1f875659b?q=80&w=1000');
+            animation: sunny 15s infinite alternate;
+        }
+        
+        .weather-info.clouds::before {
+            background-image: url('https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=1000');
+            animation: cloudy 30s infinite alternate;
+        }
+        
+        .weather-info.rain::before {
+            background-image: url('https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=1000');
+            animation: rainy 5s infinite linear;
+        }
+        
+        .weather-info.drizzle::before {
+            background-image: url('https://images.unsplash.com/photo-1541919329513-35f7af297129?q=80&w=1000');
+            animation: rainy 8s infinite linear;
+        }
+        
+        .weather-info.thunderstorm::before {
+            background-image: url('https://images.unsplash.com/photo-1429552077091-836152271555?q=80&w=1000');
+            animation: stormy 8s infinite;
+        }
+        
+        .weather-info.snow::before {
+            background-image: url('https://images.unsplash.com/photo-1491002052546-bf38f186af56?q=80&w=1000');
+            animation: snowy 10s infinite linear;
+        }
+        
+        .weather-info.mist::before,
+        .weather-info.fog::before {
+            background-image: url('https://images.unsplash.com/photo-1487621167305-5d248087c724?q=80&w=1000');
+            animation: foggy 20s infinite alternate;
+        }
+        
+        @keyframes sunny {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes cloudy {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-10%); }
+        }
+        
+        @keyframes rainy {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 20px; }
+        }
+        
+        @keyframes stormy {
+            0%, 100% { filter: brightness(0.85); }
+            50% { filter: brightness(1); }
+        }
+        
+        @keyframes snowy {
+            0% { background-position: 0 0; }
+            100% { background-position: 10px 20px; }
+        }
+        
+        @keyframes foggy {
+            0% { filter: brightness(0.85) blur(0); }
+            100% { filter: brightness(0.95) blur(1px); }
+        }
+        
+        .weather-main {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .weather-date {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .weather-details {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .weather-icon {
+            font-size: 3rem;
+            animation: float 3s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .weather-temp {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        
+        .weather-desc {
+            font-size: 1.3rem;
+        }
+        
+        .sun-times {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 30px;
+            padding: 8px 15px;
+            width: fit-content;
+            margin: 15px auto 5px auto;
+        }
+        
+        .sunrise, .sunset {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .main-recommendation {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .day-indicator {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px 15px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .day-indicator.visible {
+            display: block;
+        }
+        
+        .weather-comparison {
+            background-color: #cff4fc;
+            color: #055160;
+            padding: 10px 15px;
+            text-align: center;
+            margin-bottom: 15px;
         }
         
         .important-reminder {
             background-color: #fdebd0;
-            border: 2px solid #f39c12;
-            border-radius: 10px;
-            padding: 10px 15px;
+            border-left: 5px solid #f39c12;
+            padding: 15px 20px;
             margin: 15px 0;
-            text-align: center;
             font-weight: bold;
         }
         
         .clothing-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
+            padding: 20px;
         }
         
         .clothing-section {
             background-color: #f0f7ff;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 12px;
             border-top: 5px solid var(--primary);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
         
         .clothing-section h3 {
             color: var(--primary);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             border-bottom: 2px dashed var(--primary);
-            padding-bottom: 5px;
+            padding-bottom: 10px;
+            font-size: 1.3rem;
         }
         
         .clothing-list {
@@ -132,37 +317,57 @@
         }
         
         .clothing-list li {
-            margin: 10px 0;
-            padding-right: 30px;
+            margin: 12px 0;
+            padding: 8px 40px 8px 0;
             position: relative;
+            background-color: rgba(255,255,255,0.5);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .clothing-list li:hover {
+            background-color: rgba(255,255,255,0.9);
+            transform: translateX(-5px);
         }
         
         .clothing-list li::before {
-            content: "👕";
             position: absolute;
-            right: 0;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
         }
         
-        .clothing-list li.bottom::before {
-            content: "👖";
-        }
+        /* Custom icons for each type of clothing item */
+        .item-tshirt::before { content: "👕"; }
+        .item-shirt::before { content: "👔"; }
+        .item-sweater::before { content: "🧶"; }
+        .item-jacket::before { content: "🧥"; }
+        .item-coat::before { content: "🧥"; }
         
-        .clothing-list li.accessory::before {
-            content: "🧣";
-        }
+        .item-pants::before { content: "👖"; }
+        .item-shorts::before { content: "🩳"; }
+        .item-skirt::before { content: "👗"; }
         
-        .clothing-list li.school::before {
-            content: "🎒";
-        }
+        .item-hat::before { content: "🧢"; }
+        .item-sunglasses::before { content: "🕶️"; }
+        .item-gloves::before { content: "🧤"; }
+        .item-scarf::before { content: "🧣"; }
         
-        .clothing-list li.footwear::before {
-            content: "👟";
-        }
+        .item-shoes::before { content: "👞"; }
+        .item-boots::before { content: "👢"; }
+        .item-sandals::before { content: "👡"; }
+        
+        .item-umbrella::before { content: "☂️"; }
+        .item-bag::before { content: "🎒"; }
+        .item-bottle::before { content: "🧴"; }
+        .item-water::before { content: "💧"; }
+        .item-sunscreen::before { content: "🧴"; }
+        .item-pencil::before { content: "✏️"; }
         
         .weather-specific {
             background-color: #ffefef;
             border-top-color: var(--secondary);
-            margin-top: 20px;
         }
         
         .weather-specific h3 {
@@ -170,67 +375,17 @@
             border-bottom-color: var(--secondary);
         }
         
-        .error-message {
-            display: none;
-            background-color: #ffdddd;
-            color: #d83030;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        .refresh-button {
-            background-color: var(--success);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 25px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            margin: 20px auto;
-            display: block;
-            transition: transform 0.2s, background-color 0.2s;
-        }
-        
-        .refresh-button:hover {
-            background-color: #56aa64;
-            transform: scale(1.05);
-        }
-        
-        .update-time {
-            text-align: center;
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 10px;
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            padding: 15px;
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .emoji {
-            font-size: 2rem;
-            margin-left: 10px;
-            vertical-align: middle;
-        }
-        
-        /* סגנון לאזור שינויי מזג האוויר */
         .weather-changes {
-            margin: 20px 0;
-            border-radius: 12px;
+            margin: 0 0 20px 0;
+            border-radius: 0;
             overflow: hidden;
-            display: none; /* מוסתר כברירת מחדל */
+            display: none;
         }
         
         .weather-changes-header {
             background-color: var(--warning);
             color: white;
-            padding: 12px 15px;
+            padding: 15px;
             font-weight: bold;
             font-size: 1.1rem;
             display: flex;
@@ -246,7 +401,7 @@
         }
         
         .weather-changes-item {
-            padding: 12px 15px;
+            padding: 15px;
             border-bottom: 1px solid #ffe0b2;
             display: flex;
             align-items: center;
@@ -258,13 +413,13 @@
         }
         
         .weather-changes-icon {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
         }
         
         .weather-changes-time {
             font-weight: bold;
             margin-right: 10px;
-            min-width: 70px;
+            min-width: 80px;
         }
         
         .weather-changes-text {
@@ -287,17 +442,118 @@
             color: #388e3c;
         }
         
+        .error-message {
+            display: none;
+            background-color: #ffdddd;
+            color: #d83030;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .refresh-button {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 16px 32px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin: 25px auto;
+            display: block;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            width: 80%;
+            max-width: 300px;
+        }
+        
+        .refresh-button:hover {
+            background-color: #56aa64;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+        }
+        
+        .refresh-button:active {
+            transform: translateY(1px);
+        }
+        
+        .update-time {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            margin: 15px 0;
+            padding: 0 20px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px 15px;
+            color: #666;
+            font-size: 0.9rem;
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
         @media (max-width: 600px) {
+            body {
+                font-size: 16px;
+            }
+            
             .container {
-                padding: 10px;
+                padding: 12px;
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             
             .clothing-container {
                 grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .clothing-section {
+                padding: 15px;
+            }
+            
+            .weather-main {
+                font-size: 1.8rem;
+            }
+            
+            .weather-temp {
+                font-size: 2.2rem;
+            }
+            
+            .weather-icon {
+                font-size: 2.5rem;
+            }
+            
+            .main-recommendation {
+                font-size: 1.1rem;
+                padding: 12px 15px;
+            }
+            
+            .refresh-button {
+                padding: 14px 28px;
+                font-size: 1.1rem;
+                width: 90%;
+            }
+            
+            .weather-changes-item {
+                padding: 12px;
+            }
+            
+            .weather-changes-icon {
+                font-size: 1.5rem;
+            }
+            
+            .weather-changes-time {
+                min-width: 70px;
             }
         }
     </style>
@@ -306,10 +562,9 @@
     <div class="container">
         <header>
             <h1>מה ללבוש לבית הספר מחר?</h1>
-            <img src="https://cdn.pixabay.com/photo/2020/12/28/14/30/child-5867030_1280.png" alt="דמות מצוירת" class="mascot" style="max-width:150px;">
-            <p>בואו נראה איזה בגדים כדאי להכין לבית הספר מחר!</p>
+            <img src="https://cdn.pixabay.com/photo/2020/12/28/14/30/child-5867030_1280.png" alt="דמות מצוירת" class="mascot">
             <div class="location-badge">
-                <span class="emoji" style="font-size: 1.2rem;">📍</span> מזכרת בתיה
+                <span style="font-size: 1.2rem; margin-left: 5px;">📍</span> מזכרת בתיה
             </div>
         </header>
         
@@ -319,25 +574,50 @@
         </div>
         
         <div class="error-message" id="error">
-            אופס! לא הצלחתי לקבל את תחזית מזג האוויר. נסה שוב מאוחר יותר!
+            <p>אופס! לא הצלחתי לקבל את תחזית מזג האוויר.</p>
+            <p>נסה שוב מאוחר יותר!</p>
             <button class="refresh-button" onclick="window.location.reload()">נסה שוב</button>
         </div>
         
         <div class="result" id="result">
-            <div class="weather-info">
-                <h2>מזכרת בתיה</h2>
-                <p id="date">יום רביעי, 27 פברואר</p>
-                <p>
-                    <span id="weather-icon">☀️</span>
-                    <span id="weather-desc">בהיר</span>
-                    <span id="temperature">22°C</span>
-                </p>
+            <div class="weather-info" id="weather-info">
+                <div class="weather-main">מזכרת בתיה</div>
+                <div class="weather-date" id="date">יום רביעי, 27 פברואר</div>
+                
+                <div class="weather-details">
+                    <div class="weather-icon" id="weather-icon">☀️</div>
+                    <div class="weather-temp" id="temperature">22°C</div>
+                </div>
+                
+                <div class="weather-desc" id="weather-desc">בהיר</div>
+                
+                <div class="sun-times">
+                    <div class="sunrise">
+                        <span>🌅</span>
+                        <span id="sunrise-time">06:38</span>
+                    </div>
+                    <div class="sunset">
+                        <span>🌇</span>
+                        <span id="sunset-time">17:22</span>
+                    </div>
+                </div>
             </div>
             
-            <!-- אזור שינויי מזג אוויר -->
+            <div class="main-recommendation" id="main-recommendation">
+                מומלץ ללבוש חולצה קצרה ולקחת מטריה!
+            </div>
+            
+            <div class="day-indicator" id="day-indicator">
+                שים לב: מחר יום שישי! יום לימודים קצר
+            </div>
+            
+            <div class="weather-comparison" id="weather-comparison">
+                מחר יהיה קריר יותר מהיום ב-3 מעלות
+            </div>
+            
             <div class="weather-changes" id="weather-changes">
                 <div class="weather-changes-header">
-                    <span class="weather-changes-header-icon">⚠️</span>
+                    <span>⚠️</span>
                     <span>שינויים חשובים במזג האוויר מחר:</span>
                 </div>
                 <ul class="weather-changes-list" id="weather-changes-list">
@@ -346,51 +626,17 @@
             </div>
             
             <div id="weather-reminder" class="important-reminder" style="display:none">
-                <span style="font-size:1.3rem;">💧</span> זכרו לשתות הרבה מים מחר!
+                <span style="font-size:1.3rem; margin-left: 10px;">💧</span> זכרו לשתות הרבה מים מחר!
             </div>
             
-            <div class="clothing-container">
-                <div class="clothing-section">
-                    <h3>חלק עליון</h3>
-                    <ul class="clothing-list" id="tops">
-                        <li>חולצת בית ספר קצרה</li>
-                    </ul>
-                </div>
-                
-                <div class="clothing-section">
-                    <h3>חלק תחתון</h3>
-                    <ul class="clothing-list" id="bottoms">
-                        <li class="bottom">מכנסיים ארוכים</li>
-                    </ul>
-                </div>
-                
-                <div class="clothing-section">
-                    <h3>אביזרים ופריטים נוספים</h3>
-                    <ul class="clothing-list" id="accessories">
-                        <li class="accessory">כובע שמש</li>
-                    </ul>
-                </div>
-                
-                <div class="clothing-section">
-                    <h3>הנעלה</h3>
-                    <ul class="clothing-list" id="footwear">
-                        <li class="footwear">נעליים סגורות</li>
-                    </ul>
-                </div>
-                
-                <div class="clothing-section">
-                    <h3>ציוד לבית ספר</h3>
-                    <ul class="clothing-list" id="school-items">
-                        <li class="school">תיק עם ספרים לפי מערכת</li>
-                        <li class="school">בקבוק מים</li>
-                    </ul>
-                </div>
+            <div class="clothing-container" id="clothing-container">
+                <!-- החלקים השונים יוכנסו דינמית -->
             </div>
             
-            <div class="clothing-section weather-specific" id="weather-specific-container">
+            <div id="weather-specific-container" class="clothing-section weather-specific" style="display:none; margin: 0 20px 20px 20px;">
                 <h3 id="weather-specific-title">בגלל שיהיה חם:</h3>
                 <ul class="clothing-list" id="weather-specific-items">
-                    <li>קרם הגנה</li>
+                    <!-- התוכן יוכנס דינמית -->
                 </ul>
             </div>
             
@@ -454,6 +700,58 @@
             'October': 'אוקטובר',
             'November': 'נובמבר',
             'December': 'דצמבר'
+        };
+        
+        // CSS classes for different clothing items
+        const clothingItemClasses = {
+            // Tops
+            'חולצת בית ספר קצרה': 'item-tshirt',
+            'חולצת בית ספר עם שרוול ארוך': 'item-shirt',
+            'חולצת טי': 'item-tshirt',
+            'סוודר': 'item-sweater',
+            'סוודר חם': 'item-sweater',
+            'קפוצ׳ון': 'item-jacket',
+            'מעיל': 'item-coat',
+            'מעיל חורף': 'item-coat',
+            'מעיל חורף עבה': 'item-coat',
+            'מעיל עמיד למים': 'item-coat',
+            
+            // Bottoms
+            'מכנסיים ארוכים': 'item-pants',
+            'מכנסיים קצרים': 'item-shorts',
+            'מכנסיים ארוכים קלים': 'item-pants',
+            'מכנסיים עבים': 'item-pants',
+            'חצאית': 'item-skirt',
+            'חצאית עם טייץ': 'item-skirt',
+            
+            // Accessories
+            'כובע': 'item-hat',
+            'כובע חם': 'item-hat',
+            'כובע שמש': 'item-hat',
+            'משקפי שמש': 'item-sunglasses',
+            'כפפות': 'item-gloves',
+            'כפפות חמות': 'item-gloves',
+            
+            // Footwear
+            'נעליים סגורות': 'item-shoes',
+            'נעליים קלות': 'item-shoes',
+            'מגפיים': 'item-boots',
+            'מגפיים חמים': 'item-boots',
+            'סנדלים': 'item-sandals',
+            
+            // Weather-specific items
+            'מטריה': 'item-umbrella',
+            'מטריה קטנה': 'item-umbrella',
+            'מטריה חזקה': 'item-umbrella',
+            
+            // School items
+            'תיק': 'item-bag',
+            'תיק עם ספרים': 'item-bag',
+            'בקבוק מים': 'item-water',
+            'בקבוק מים גדול': 'item-water',
+            'קלמר': 'item-pencil',
+            'קרם הגנה': 'item-sunscreen',
+            'שקית ניילון': 'item-bag'
         };
         
         // Clothing recommendations based on temperature ranges (adjusted for kids going to school)
@@ -635,6 +933,58 @@
             }
         };
         
+        // Main recommendation texts based on weather conditions and temperature
+        const mainRecommendations = {
+            'Rain': {
+                'cold': 'מומלץ ללבוש בגדים חמים ולקחת מטריה!',
+                'cool': 'מומלץ ללבוש שכבות ולקחת מטריה!',
+                'mild': 'מומלץ ללבוש בגדים עם שרוול ארוך ולקחת מטריה!',
+                'warm': 'מומלץ ללבוש חולצה קצרה ולקחת מטריה!'
+            },
+            'Thunderstorm': {
+                'cold': 'מומלץ ללבוש בגדים חמים ולקחת מטריה חזקה!',
+                'cool': 'מומלץ ללבוש שכבות ולקחת מטריה חזקה!',
+                'mild': 'מומלץ ללבוש בגדים עם שרוול ארוך ולקחת מטריה חזקה!',
+                'warm': 'מומלץ ללבוש חולצה קצרה ולקחת מטריה חזקה!'
+            },
+            'Drizzle': {
+                'cold': 'מומלץ ללבוש בגדים חמים ולקחת מטריה קטנה!',
+                'cool': 'מומלץ ללבוש שכבות ולקחת מטריה קטנה!',
+                'mild': 'מומלץ ללבוש בגדים עם שרוול ארוך ולקחת מטריה קטנה!',
+                'warm': 'מומלץ ללבוש חולצה קצרה ולקחת מטריה קטנה!'
+            },
+            'Snow': {
+                'cold': 'מומלץ ללבוש בגדים חמים במיוחד ומגפיים!',
+                'cool': 'מומלץ ללבוש בגדים חמים במיוחד ומגפיים!'
+            },
+            'Clear': {
+                'very_cold': 'מומלץ ללבוש בגדים חמים מאוד! יהיה קר מחר.',
+                'cold': 'מומלץ ללבוש בגדים חמים! יהיה קר מחר.',
+                'cool': 'מומלץ ללבוש שכבות! יהיה קריר מחר.',
+                'mild': 'מומלץ ללבוש חולצה קלה עם שרוול!',
+                'warm': 'מומלץ ללבוש חולצה קצרה וקחו בקבוק מים!',
+                'hot': 'מומלץ ללבוש בגדים קלים וקחו הרבה מים!'
+            },
+            'Clouds': {
+                'very_cold': 'מומלץ ללבוש בגדים חמים מאוד! יהיה קר ומעונן.',
+                'cold': 'מומלץ ללבוש בגדים חמים! יהיה קר ומעונן.',
+                'cool': 'מומלץ ללבוש שכבות! יהיה קריר ומעונן.',
+                'mild': 'מומלץ ללבוש חולצה עם שרוול! יהיה מעונן.',
+                'warm': 'מומלץ ללבוש חולצה קצרה! יהיה חם ומעונן.',
+                'hot': 'מומלץ ללבוש בגדים קלים! יהיה חם ומעונן.'
+            }
+        };
+        
+        // Default main recommendations for temperature categories
+        const defaultMainRecommendations = {
+            'very_cold': 'מומלץ ללבוש בגדים חמים מאוד!',
+            'cold': 'מומלץ ללבוש בגדים חמים!',
+            'cool': 'מומלץ ללבוש שכבות! יהיה קריר.',
+            'mild': 'מומלץ ללבוש חולצה עם שרוול!',
+            'warm': 'מומלץ ללבוש חולצה קצרה וקחו בקבוק מים!',
+            'hot': 'מומלץ ללבוש בגדים קלים וקחו הרבה מים!'
+        };
+        
         // OpenWeatherMap API key - הכנס את המפתח שלך כאן
         const apiKey = "64319aab490fe096e4759d3f342c1d2e";
         
@@ -649,18 +999,20 @@
         const weatherIconElement = document.getElementById('weather-icon');
         const weatherDescElement = document.getElementById('weather-desc');
         const temperatureElement = document.getElementById('temperature');
-        const topsElement = document.getElementById('tops');
-        const bottomsElement = document.getElementById('bottoms');
-        const accessoriesElement = document.getElementById('accessories');
-        const footwearElement = document.getElementById('footwear');
-        const schoolItemsElement = document.getElementById('school-items');
+        const weatherInfoElement = document.getElementById('weather-info');
+        const weatherReminderElement = document.getElementById('weather-reminder');
+        const weatherChangesContainer = document.getElementById('weather-changes');
+        const weatherChangesList = document.getElementById('weather-changes-list');
         const weatherSpecificContainer = document.getElementById('weather-specific-container');
         const weatherSpecificTitle = document.getElementById('weather-specific-title');
         const weatherSpecificItems = document.getElementById('weather-specific-items');
         const updateTimeElement = document.getElementById('update-time');
-        const weatherReminderElement = document.getElementById('weather-reminder');
-        const weatherChangesContainer = document.getElementById('weather-changes');
-        const weatherChangesList = document.getElementById('weather-changes-list');
+        const clothingContainer = document.getElementById('clothing-container');
+        const mainRecommendationElement = document.getElementById('main-recommendation');
+        const dayIndicatorElement = document.getElementById('day-indicator');
+        const weatherComparisonElement = document.getElementById('weather-comparison');
+        const sunriseTimeElement = document.getElementById('sunrise-time');
+        const sunsetTimeElement = document.getElementById('sunset-time');
         
         // Load weather data when page loads
         document.addEventListener('DOMContentLoaded', function() {
@@ -770,119 +1122,88 @@
             return changes;
         }
         
+        // פונקציה להשוואת הטמפרטורה של מחר לטמפרטורה של היום
+        function compareTemperatures(tomorrowTemp, todayTemp) {
+            const diff = Math.round(tomorrowTemp - todayTemp);
+            
+            if (Math.abs(diff) < 2) {
+                return "מזג האוויר מחר יהיה דומה להיום";
+            } else if (diff > 0) {
+                return `מחר יהיה חם יותר מהיום ב-${diff} מעלות`;
+            } else {
+                return `מחר יהיה קריר יותר מהיום ב-${Math.abs(diff)} מעלות`;
+            }
+        }
+        
+        // פונקציה להמרת שעה מפורמט Unix Timestamp לפורמט של שעה:דקות
+        function formatTime(timestamp) {
+            const date = new Date(timestamp * 1000);
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+        
         function getWeatherForecast() {
-            const baseUrl = "https://api.openweathermap.org/data/2.5/forecast";
-            const url = `${baseUrl}?q=${cityLocation}&appid=${apiKey}&units=metric&cnt=16`; // נשנה ל-16 כדי לקבל יותר נתונים שעתיים
+            // הקורא להשוואה בין היום ומחר, נקבל גם את תחזית היום
+            const todayUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityLocation}&appid=${apiKey}&units=metric`;
+            const tomorrowUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityLocation}&appid=${apiKey}&units=metric&cnt=16`;
             
             // Show loading, hide results and error
             loadingElement.style.display = 'block';
             resultElement.style.display = 'none';
             errorElement.style.display = 'none';
             
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
+            // Fetch both today's and tomorrow's forecast
+            Promise.all([
+                fetch(todayUrl).then(response => {
+                    if (!response.ok) throw new Error('Error fetching today\'s weather');
+                    return response.json();
+                }),
+                fetch(tomorrowUrl).then(response => {
+                    if (!response.ok) throw new Error('Error fetching tomorrow\'s weather');
                     return response.json();
                 })
-                .then(data => {
-                    // חילוץ התחזית למחר
-                    const tomorrow = new Date();
-                    tomorrow.setDate(tomorrow.getDate() + 1);
-                    const tomorrowStr = tomorrow.toISOString().split('T')[0];
-                    
-                    // סינון התחזיות רק לגבי מחר
-                    const tomorrowForecasts = data.list.filter(item => 
-                        item.dt_txt.startsWith(tomorrowStr)
-                    );
-                    
-                    // התחזית הראשונה היא הבסיס להמלצות הלבוש
-                    const mainForecast = tomorrowForecasts.length > 0 ? tomorrowForecasts[0] : data.list[0];
-                    
-                    // יצירת אובייקט מידע על התחזית
-                    const weatherInfo = {
-                        avgTemp: mainForecast.main.temp,
-                        minTemp: mainForecast.main.temp_min,
-                        maxTemp: mainForecast.main.temp_max,
-                        condition: mainForecast.weather[0].main,
-                        description: mainForecast.weather[0].description,
-                        tomorrow: tomorrow
-                    };
-                    
-                    // הצגת התוצאות
-                    displayResults(data.city, weatherInfo, tomorrowForecasts);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    loadingElement.style.display = 'none';
-                    errorElement.style.display = 'block';
-                });
-        }
-        
-        function parseTomorrowWeather(forecastData) {
-            if (!forecastData || !forecastData.list || forecastData.list.length === 0) {
-                throw new Error('Invalid forecast data');
-            }
-            
-            // Get tomorrow's date
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const tomorrowDateStr = tomorrow.toISOString().split('T')[0];
-            
-            // Filter forecasts for tomorrow
-            const tomorrowForecasts = forecastData.list.filter(item => 
-                item.dt_txt.startsWith(tomorrowDateStr)
-            );
-            
-            if (tomorrowForecasts.length === 0) {
-                throw new Error('No forecast data available for tomorrow');
-            }
-            
-            // Calculate average temperature
-            const avgTemp = tomorrowForecasts.reduce((sum, item) => 
-                sum + item.main.temp, 0) / tomorrowForecasts.length;
-            
-            // Find min and max temperatures
-            const minTemp = Math.min(...tomorrowForecasts.map(item => item.main.temp_min));
-            const maxTemp = Math.max(...tomorrowForecasts.map(item => item.main.temp_max));
-            
-            // Determine weather condition (prioritize rain, snow, etc.)
-            const weatherPriorities = {
-                'Thunderstorm': 1,
-                'Snow': 2,
-                'Rain': 3,
-                'Drizzle': 4,
-                'Mist': 5,
-                'Fog': 6,
-                'Clouds': 7,
-                'Clear': 8
-            };
-            
-            let mainCondition = 'Clear';
-            let mainDescription = '';
-            let highestPriority = 10;
-            
-            for (const forecast of tomorrowForecasts) {
-                const weather = forecast.weather[0];
-                const priority = weatherPriorities[weather.main] || 9;
+            ])
+            .then(([todayData, tomorrowData]) => {
+                // Extract today's temperature
+                const todayTemp = todayData.main.temp;
+                const sunriseTime = formatTime(todayData.sys.sunrise);
+                const sunsetTime = formatTime(todayData.sys.sunset);
                 
-                if (priority < highestPriority) {
-                    highestPriority = priority;
-                    mainCondition = weather.main;
-                    mainDescription = weather.description;
-                }
-            }
-            
-            return {
-                avgTemp: avgTemp,
-                minTemp: minTemp,
-                maxTemp: maxTemp,
-                condition: mainCondition,
-                description: mainDescription,
-                tomorrow: tomorrow
-            };
+                // Extract tomorrow's forecasts
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                
+                // Filter forecasts for tomorrow
+                const tomorrowForecasts = tomorrowData.list.filter(item => 
+                    item.dt_txt.startsWith(tomorrowStr)
+                );
+                
+                // The first forecast for tomorrow or the first available forecast
+                const mainForecast = tomorrowForecasts.length > 0 ? tomorrowForecasts[0] : tomorrowData.list[0];
+                
+                // Create weather info object
+                const weatherInfo = {
+                    avgTemp: mainForecast.main.temp,
+                    minTemp: mainForecast.main.temp_min,
+                    maxTemp: mainForecast.main.temp_max,
+                    condition: mainForecast.weather[0].main,
+                    description: mainForecast.weather[0].description,
+                    tomorrow: tomorrow,
+                    todayTemp: todayTemp,
+                    sunriseTime: sunriseTime,
+                    sunsetTime: sunsetTime
+                };
+                
+                // Display the results
+                displayResults(tomorrowData.city, weatherInfo, tomorrowForecasts);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loadingElement.style.display = 'none';
+                errorElement.style.display = 'block';
+            });
         }
         
         function getTemperatureCategory(temp) {
@@ -892,6 +1213,65 @@
             if (temp < 24) return 'mild';
             if (temp < 29) return 'warm';
             return 'hot';
+        }
+        
+        // פונקציה שמחזירה המלצה מרכזית מתאימה
+        function getMainRecommendation(condition, tempCategory) {
+            // בדיקה אם יש המלצה ספציפית למזג האוויר והטמפרטורה
+            if (mainRecommendations[condition] && mainRecommendations[condition][tempCategory]) {
+                return mainRecommendations[condition][tempCategory];
+            }
+            
+            // אם לא, נחזיר המלצה כללית לפי טמפרטורה
+            return defaultMainRecommendations[tempCategory];
+        }
+        
+        // פונקציה להצגת הקטגוריות הלא ריקות
+        function displayClothingCategories(clothing) {
+            const categories = [
+                { name: 'חלק עליון', items: clothing.tops, id: 'tops' },
+                { name: 'חלק תחתון', items: clothing.bottoms, id: 'bottoms' },
+                { name: 'אביזרים', items: clothing.accessories, id: 'accessories' },
+                { name: 'הנעלה', items: clothing.footwear, id: 'footwear' },
+                { name: 'ציוד לבית ספר', items: clothing.school_items, id: 'school_items' }
+            ];
+            
+            // נקה את המכיל הקיים
+            clothingContainer.innerHTML = '';
+            
+            // הצג רק קטגוריות עם פריטים
+            categories.forEach(category => {
+                if (category.items && category.items.length > 0) {
+                    const section = document.createElement('div');
+                    section.className = 'clothing-section';
+                    
+                    const heading = document.createElement('h3');
+                    heading.textContent = category.name;
+                    
+                    const list = document.createElement('ul');
+                    list.className = 'clothing-list';
+                    list.id = category.id;
+                    
+                    category.items.forEach(item => {
+                        const li = document.createElement('li');
+                        
+                        // הוסף מחלקת CSS לפי סוג הפריט
+                        for (const [itemText, className] of Object.entries(clothingItemClasses)) {
+                            if (item.includes(itemText)) {
+                                li.className = className;
+                                break;
+                            }
+                        }
+                        
+                        li.textContent = item;
+                        list.appendChild(li);
+                    });
+                    
+                    section.appendChild(heading);
+                    section.appendChild(list);
+                    clothingContainer.appendChild(section);
+                }
+            });
         }
         
         function displayResults(cityInfo, weatherInfo, hourlyForecasts) {
@@ -909,8 +1289,10 @@
             // Round the temperature
             const temp = Math.round(weatherInfo.avgTemp);
             
-            // Get clothing recommendations based on temperature
+            // Get temperature category
             const tempCategory = getTemperatureCategory(temp);
+            
+            // Get clothing recommendations based on temperature
             const clothing = JSON.parse(JSON.stringify(clothingRules[tempCategory])); // Deep copy to avoid modifying the original
             
             // Weather-specific recommendations
@@ -931,6 +1313,36 @@
             } else {
                 weatherReminderElement.style.display = 'none';
             }
+            
+            // Set main recommendation
+            const mainRecommendation = getMainRecommendation(weatherInfo.condition, tempCategory);
+            mainRecommendationElement.textContent = mainRecommendation;
+            
+            // Set the day indicator for Friday or Sunday
+            const dayOfWeek = tomorrow.getDay();
+            if (dayOfWeek === 5) { // Friday
+                dayIndicatorElement.textContent = 'שים לב: מחר יום שישי! יום לימודים קצר';
+                dayIndicatorElement.className = 'day-indicator visible';
+            } else if (dayOfWeek === 0) { // Sunday
+                dayIndicatorElement.textContent = 'שים לב: מחר יום ראשון! תחילת שבוע חדש';
+                dayIndicatorElement.className = 'day-indicator visible';
+            } else {
+                dayIndicatorElement.className = 'day-indicator';
+            }
+            
+            // Set weather comparison
+            if (weatherInfo.todayTemp) {
+                weatherComparisonElement.textContent = compareTemperatures(temp, weatherInfo.todayTemp);
+            } else {
+                weatherComparisonElement.style.display = 'none';
+            }
+            
+            // Set sunrise/sunset times
+            sunriseTimeElement.textContent = weatherInfo.sunriseTime || '06:00';
+            sunsetTimeElement.textContent = weatherInfo.sunsetTime || '18:00';
+            
+            // הגדרת מחלקת רקע לפי מזג האוויר
+            weatherInfoElement.className = 'weather-info ' + weatherInfo.condition.toLowerCase();
             
             // זיהוי והצגת שינויי מזג אוויר
             const weatherChanges = detectWeatherChanges(hourlyForecasts);
@@ -968,23 +1380,38 @@
                 weatherChangesContainer.style.display = 'none';
             }
             
-            // Update the DOM
+            // Update the DOM for basic weather info
             dateElement.textContent = formattedDate;
             weatherIconElement.textContent = weatherIcon;
             weatherDescElement.textContent = weatherDesc;
             temperatureElement.textContent = `${temp}°C`;
             
-            // Update clothing lists
-            updateList(topsElement, clothing.tops);
-            updateList(bottomsElement, clothing.bottoms, 'bottom');
-            updateList(accessoriesElement, clothing.accessories, 'accessory');
-            updateList(footwearElement, clothing.footwear, 'footwear');
-            updateList(schoolItemsElement, clothing.school_items, 'school');
+            // הצג קטגוריות לבוש כאשר מסננים את הריקות
+            displayClothingCategories(clothing);
             
             // Update weather-specific items if available
-            if (weatherSpecific) {
+            if (weatherSpecific && weatherSpecific.items.length > 0) {
                 weatherSpecificTitle.textContent = weatherSpecific.title;
-                updateList(weatherSpecificItems, weatherSpecific.items);
+                
+                // Clear existing items
+                weatherSpecificItems.innerHTML = '';
+                
+                // Add new items with appropriate classes
+                weatherSpecific.items.forEach(item => {
+                    const li = document.createElement('li');
+                    
+                    // Add CSS class based on item type
+                    for (const [itemText, className] of Object.entries(clothingItemClasses)) {
+                        if (item.includes(itemText)) {
+                            li.className = className;
+                            break;
+                        }
+                    }
+                    
+                    li.textContent = item;
+                    weatherSpecificItems.appendChild(li);
+                });
+                
                 weatherSpecificContainer.style.display = 'block';
             } else {
                 weatherSpecificContainer.style.display = 'none';
@@ -1001,21 +1428,6 @@
             // Hide loading, show results
             loadingElement.style.display = 'none';
             resultElement.style.display = 'block';
-        }
-        
-        function updateList(element, items, className = '') {
-            // Clear existing items
-            element.innerHTML = '';
-            
-            // Add new items
-            items.forEach(item => {
-                const li = document.createElement('li');
-                if (className) {
-                    li.className = className;
-                }
-                li.textContent = item;
-                element.appendChild(li);
-            });
         }
     </script>
 </body>
