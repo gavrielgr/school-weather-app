@@ -5,7 +5,6 @@ const urlsToCache = [
     '/styles.css',
     '/script.js',
     '/manifest.json'
-    // הסרתי את הקבצים שאינם קיימים כרגע כמו favicon.ico והאייקונים
 ];
 
 self.addEventListener('install', event => {
@@ -22,6 +21,11 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
+    // בדיקה שזו בקשה שנוכל לטפל בה
+    if (!shouldHandleRequest(event.request)) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
         .then(response => {
@@ -33,7 +37,7 @@ self.addEventListener('fetch', event => {
             // אחרת, הבא את הבקשה מהרשת
             return fetch(event.request)
             .then(response => {
-                // אין טעם לשמור במטמון אם התשובה לא תקינה או אם זו תשובה של API מזג אוויר
+                // בדיקה שהתשובה תקינה ושהבקשה שאנחנו יכולים לשמור במטמון
                 if (!response || response.status !== 200 || response.type !== 'basic' || 
                     event.request.url.includes('api.openweathermap.org')) {
                     return response;
@@ -42,11 +46,17 @@ self.addEventListener('fetch', event => {
                 // שכפל את התשובה כי אפשר להשתמש בזרם תשובות רק פעם אחת
                 const responseToCache = response.clone();
                 
-                // שמור את התשובה במטמון
-                caches.open(CACHE_NAME)
-                .then(cache => {
-                    cache.put(event.request, responseToCache);
-                });
+                // שמור את התשובה במטמון - רק אם סוג הבקשה מתאים
+                if (shouldCacheRequest(event.request)) {
+                    caches.open(CACHE_NAME)
+                    .then(cache => {
+                        try {
+                            cache.put(event.request, responseToCache);
+                        } catch (error) {
+                            console.error('שגיאה בשמירת בקשה במטמון:', error);
+                        }
+                    });
+                }
                 
                 return response;
             });
@@ -57,6 +67,41 @@ self.addEventListener('fetch', event => {
         })
     );
 });
+
+// פונקציה שבודקת אם צריך לטפל בבקשה
+function shouldHandleRequest(request) {
+    // טיפול רק בבקשות HTTP/HTTPS
+    if (!request.url.startsWith('http')) {
+        return false;
+    }
+    
+    // אין טיפול בבקשות chrome-extension
+    if (request.url.startsWith('chrome-extension://')) {
+        return false;
+    }
+    
+    return true;
+}
+
+// פונקציה שבודקת אם צריך לשמור את הבקשה במטמון
+function shouldCacheRequest(request) {
+    // שמור רק בקשות HTTP/HTTPS
+    if (!request.url.startsWith('http')) {
+        return false;
+    }
+    
+    // לא שומר במטמון בקשות chrome-extension
+    if (request.url.startsWith('chrome-extension://')) {
+        return false;
+    }
+    
+    // לא שומר במטמון בקשות API מזג אוויר (כי הן משתנות)
+    if (request.url.includes('api.openweathermap.org')) {
+        return false;
+    }
+    
+    return true;
+}
 
 self.addEventListener('activate', event => {
     const cacheWhitelist = [CACHE_NAME];
