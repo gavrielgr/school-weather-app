@@ -632,70 +632,141 @@ function formatTime(timestamp) {
 function getWeatherForecast() {
     // הקורא להשוואה בין היום ומחר, נקבל גם את תחזית היום
     const todayUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityLocation}&appid=${apiKey}&units=metric`;
-    const tomorrowUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityLocation}&appid=${apiKey}&units=metric&cnt=16`;
+    
+    // לקבלת תחזית ל-5 ימים, כולל מחר (cnt=40 מבטיח שיהיו מספיק נתונים)
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityLocation}&appid=${apiKey}&units=metric&cnt=40`;
     
     // Show loading, hide results and error
     loadingElement.style.display = 'block';
     resultElement.style.display = 'none';
     errorElement.style.display = 'none';
     
-    // Fetch both today's and tomorrow's forecast
+    // Fetch both today's and forecast data
     Promise.all([
         fetch(todayUrl).then(response => {
             if (!response.ok) throw new Error('Error fetching today\'s weather');
             return response.json();
         }),
-        fetch(tomorrowUrl).then(response => {
-            if (!response.ok) throw new Error('Error fetching tomorrow\'s weather');
+        fetch(forecastUrl).then(response => {
+            if (!response.ok) throw new Error('Error fetching forecast');
             return response.json();
         })
     ])
-    .then(([todayData, tomorrowData]) => {
+    .then(([todayData, forecastData]) => {
         // Extract today's temperature and city name
         const todayTemp = todayData.main.temp;
         const cityName = todayData.name;
         const sunsetTime = formatTime(todayData.sys.sunset);
         
-        // Extract tomorrow's forecasts
+        // הוספת מיפוי שמות ערים לעברית
+        const cityNameHebrew = getCityNameInHebrew(cityName);
+        
+        // חישוב מחר
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
-        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+        const tomorrowDateStr = tomorrow.toISOString().split('T')[0];
         
-        // Filter forecasts for tomorrow
-        const tomorrowForecasts = tomorrowData.list.filter(item => 
-            item.dt_txt.startsWith(tomorrowStr)
+        // סינון כל תחזיות מחר
+        const tomorrowForecasts = forecastData.list.filter(item => 
+            item.dt_txt.startsWith(tomorrowDateStr)
         );
         
-        // The first forecast for tomorrow or the first available forecast
-        const mainForecast = tomorrowForecasts.length > 0 ? tomorrowForecasts[0] : tomorrowData.list[0];
+        // בדיקה אם יש לנו תחזיות למחר
+        if (tomorrowForecasts.length === 0) {
+            throw new Error('לא נמצאו תחזיות למחר');
+        }
         
-        // Create weather info object
+        // חישוב טמפרטורה ממוצעת לשעות היום (8:00-16:00) - שעות בית הספר
+        const schoolHoursForecasts = tomorrowForecasts.filter(forecast => {
+            const hour = new Date(forecast.dt * 1000).getHours();
+            return hour >= 8 && hour <= 16;
+        });
+        
+        // אם אין תחזיות לשעות בית הספר, נשתמש בכל התחזיות של מחר
+        const forecasts = schoolHoursForecasts.length > 0 ? schoolHoursForecasts : tomorrowForecasts;
+        
+        // חישוב ממוצע טמפרטורה
+        const sumTemp = forecasts.reduce((sum, forecast) => sum + forecast.main.temp, 0);
+        const avgTemp = sumTemp / forecasts.length;
+        
+        // מצא את הטמפרטורה המינימלית והמקסימלית
+        const minTemp = Math.min(...forecasts.map(forecast => forecast.main.temp_min));
+        const maxTemp = Math.max(...forecasts.map(forecast => forecast.main.temp_max));
+        
+        // קביעת תנאי מזג האוויר העיקרי (לוקח את השכיח ביותר)
+        const conditionCounts = {};
+        forecasts.forEach(forecast => {
+            const condition = forecast.weather[0].main;
+            conditionCounts[condition] = (conditionCounts[condition] || 0) + 1;
+        });
+        
+        let mainCondition = forecasts[0].weather[0].main; // ברירת מחדל
+        let maxCount = 0;
+        
+        Object.entries(conditionCounts).forEach(([condition, count]) => {
+            if (count > maxCount) {
+                maxCount = count;
+                mainCondition = condition;
+            }
+        });
+        
+        // יצירת אובייקט מידע מזג אוויר
         const weatherInfo = {
-            avgTemp: mainForecast.main.temp,
-            minTemp: mainForecast.main.temp_min,
-            maxTemp: mainForecast.main.temp_max,
-            condition: mainForecast.weather[0].main,
-            description: mainForecast.weather[0].description,
+            avgTemp: avgTemp,
+            minTemp: minTemp,
+            maxTemp: maxTemp,
+            condition: mainCondition,
+            description: forecasts[0].weather[0].description,
             tomorrow: tomorrow,
             todayTemp: todayTemp,
             cityName: cityName,
+            cityNameHebrew: cityNameHebrew,
             sunsetTime: sunsetTime
         };
         
-        // Update page title to include city name
-        document.title = `מה ללבוש לבית הספר מחר? - ${cityName}`;
+        // עדכון כותרת הדף לכלול את שם העיר בעברית
+        document.title = `מה ללבוש לבית הספר מחר? - ${cityNameHebrew}`;
         
-        // Update weather title to include city name
-        weatherTitleElement.textContent = `מה ללבוש לבית הספר מחר ב${cityName}?`;
+        // עדכון כותרת מזג האוויר לכלול את שם העיר בעברית
+        weatherTitleElement.textContent = `מה ללבוש לבית הספר מחר ב${cityNameHebrew}?`;
         
         // Display the results
-        displayResults(tomorrowData.city, weatherInfo, tomorrowForecasts);
+        displayResults(forecastData.city, weatherInfo, tomorrowForecasts);
     })
     .catch(error => {
         console.error('Error:', error);
         loadingElement.style.display = 'none';
         errorElement.style.display = 'block';
     });
+}
+
+// פונקציה להמרת שם עיר מאנגלית לעברית
+function getCityNameInHebrew(englishName) {
+    const cityTranslations = {
+        'Mazkeret Batya': 'מזכרת בתיה',
+        'Tel Aviv': 'תל אביב',
+        'Jerusalem': 'ירושלים',
+        'Haifa': 'חיפה',
+        'Beersheba': 'באר שבע',
+        'Eilat': 'אילת',
+        'Netanya': 'נתניה',
+        'Ashdod': 'אשדוד',
+        'Ashkelon': 'אשקלון',
+        'Tiberias': 'טבריה',
+        'Nazareth': 'נצרת',
+        'Herzliya': 'הרצליה',
+        'Kfar Saba': 'כפר סבא',
+        'Ramat Gan': 'רמת גן',
+        'Rehovot': 'רחובות',
+        'Bat Yam': 'בת ים',
+        'Holon': 'חולון',
+        'Petah Tikva': 'פתח תקווה',
+        'Rishon LeZion': 'ראשון לציון',
+        'Ramla': 'רמלה',
+        'Lod': 'לוד'
+    };
+    
+    return cityTranslations[englishName] || englishName;
 }
 
 // קביעת קטגוריית הטמפרטורה לפי ערך מספרי
