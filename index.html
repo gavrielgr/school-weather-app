@@ -12,6 +12,7 @@
             --background: #F8F9FA;
             --text: #343A40;
             --success: #6BCB77;
+            --warning: #ff9800;
         }
         
         * {
@@ -218,6 +219,74 @@
             vertical-align: middle;
         }
         
+        /* סגנון לאזור שינויי מזג האוויר */
+        .weather-changes {
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            display: none; /* מוסתר כברירת מחדל */
+        }
+        
+        .weather-changes-header {
+            background-color: var(--warning);
+            color: white;
+            padding: 12px 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .weather-changes-list {
+            background-color: #fff3e0;
+            padding: 0;
+            margin: 0;
+            list-style-type: none;
+        }
+        
+        .weather-changes-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ffe0b2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .weather-changes-item:last-child {
+            border-bottom: none;
+        }
+        
+        .weather-changes-icon {
+            font-size: 1.5rem;
+        }
+        
+        .weather-changes-time {
+            font-weight: bold;
+            margin-right: 10px;
+            min-width: 70px;
+        }
+        
+        .weather-changes-text {
+            flex: 1;
+        }
+        
+        .change-temperature-up {
+            color: #e65100;
+        }
+        
+        .change-temperature-down {
+            color: #0277bd;
+        }
+        
+        .change-rain-start {
+            color: #0277bd;
+        }
+        
+        .change-rain-end {
+            color: #388e3c;
+        }
+        
         @media (max-width: 600px) {
             .container {
                 padding: 10px;
@@ -263,6 +332,17 @@
                     <span id="weather-desc">בהיר</span>
                     <span id="temperature">22°C</span>
                 </p>
+            </div>
+            
+            <!-- אזור שינויי מזג אוויר -->
+            <div class="weather-changes" id="weather-changes">
+                <div class="weather-changes-header">
+                    <span class="weather-changes-header-icon">⚠️</span>
+                    <span>שינויים חשובים במזג האוויר מחר:</span>
+                </div>
+                <ul class="weather-changes-list" id="weather-changes-list">
+                    <!-- התוכן יוכנס דינמית -->
+                </ul>
             </div>
             
             <div id="weather-reminder" class="important-reminder" style="display:none">
@@ -556,7 +636,7 @@
         };
         
         // OpenWeatherMap API key - הכנס את המפתח שלך כאן
-        const apiKey = "64319aab490fe096e4759d3f342c1d2e";
+        const apiKey = "YOUR_API_KEY";
         
         // שימוש בשם משתנה שונה מ-location (שהוא מובנה בדפדפן)
         const cityLocation = "Mazkeret Batya,IL";
@@ -579,15 +659,120 @@
         const weatherSpecificItems = document.getElementById('weather-specific-items');
         const updateTimeElement = document.getElementById('update-time');
         const weatherReminderElement = document.getElementById('weather-reminder');
+        const weatherChangesContainer = document.getElementById('weather-changes');
+        const weatherChangesList = document.getElementById('weather-changes-list');
         
         // Load weather data when page loads
         document.addEventListener('DOMContentLoaded', function() {
             getWeatherForecast();
         });
         
+        // פונקציה שמחזירה תווית זמן ידידותית בעברית
+        function getTimeLabel(hour) {
+            if (hour >= 7 && hour <= 9) {
+                return "בבוקר";
+            } else if (hour >= 10 && hour <= 12) {
+                return "לפני הצהריים";
+            } else if (hour >= 13 && hour <= 14) {
+                return "בצהריים";
+            } else if (hour >= 15 && hour <= 18) {
+                return "אחה״צ";
+            } else {
+                return "בערב";
+            }
+        }
+        
+        // פונקציה שמזהה שינויים משמעותיים במזג האוויר
+        function detectWeatherChanges(forecasts) {
+            // מסנן רק את התחזיות לשעות בית הספר (8:00-16:00)
+            const schoolHoursForecasts = forecasts.filter(forecast => {
+                const hour = new Date(forecast.dt * 1000).getHours();
+                return hour >= 8 && hour <= 16;
+            });
+            
+            // אם אין מספיק נתונים, מחזיר רשימה ריקה
+            if (schoolHoursForecasts.length < 2) {
+                return [];
+            }
+            
+            const changes = [];
+            
+            // בדיקת שינויי טמפרטורה משמעותיים
+            for (let i = 1; i < schoolHoursForecasts.length; i++) {
+                const prevForecast = schoolHoursForecasts[i-1];
+                const currentForecast = schoolHoursForecasts[i];
+                
+                const prevTemp = prevForecast.main.temp;
+                const currentTemp = currentForecast.main.temp;
+                const tempDiff = currentTemp - prevTemp;
+                
+                const currentHour = new Date(currentForecast.dt * 1000).getHours();
+                
+                // זיהוי שינוי טמפרטורה משמעותי (מעל 5 מעלות)
+                if (Math.abs(tempDiff) >= 5) {
+                    const timeLabel = getTimeLabel(currentHour);
+                    
+                    if (tempDiff > 0) {
+                        changes.push({
+                            type: 'temperature-up',
+                            icon: '🌡️',
+                            time: timeLabel,
+                            text: `יתחמם משמעותית - עד ${Math.round(currentTemp)}°C`,
+                            class: 'change-temperature-up'
+                        });
+                    } else {
+                        changes.push({
+                            type: 'temperature-down',
+                            icon: '🌡️',
+                            time: timeLabel,
+                            text: `יתקרר משמעותית - עד ${Math.round(currentTemp)}°C`,
+                            class: 'change-temperature-down'
+                        });
+                    }
+                }
+                
+                // זיהוי תחילת או סיום גשם
+                const prevWeather = prevForecast.weather[0].main;
+                const currentWeather = currentForecast.weather[0].main;
+                
+                const isRainyWeather = weather => ['Rain', 'Drizzle', 'Thunderstorm'].includes(weather);
+                
+                if (!isRainyWeather(prevWeather) && isRainyWeather(currentWeather)) {
+                    changes.push({
+                        type: 'rain-start',
+                        icon: '🌧️',
+                        time: getTimeLabel(currentHour),
+                        text: `צפוי להתחיל גשם בסביבות השעה ${currentHour}:00`,
+                        class: 'change-rain-start'
+                    });
+                } else if (isRainyWeather(prevWeather) && !isRainyWeather(currentWeather)) {
+                    changes.push({
+                        type: 'rain-end',
+                        icon: '🌦️',
+                        time: getTimeLabel(currentHour),
+                        text: `הגשם צפוי להיפסק בסביבות השעה ${currentHour}:00`,
+                        class: 'change-rain-end'
+                    });
+                }
+                
+                // זיהוי תחילת שלג
+                if (prevWeather !== 'Snow' && currentWeather === 'Snow') {
+                    changes.push({
+                        type: 'snow-start',
+                        icon: '❄️',
+                        time: getTimeLabel(currentHour),
+                        text: `צפוי להתחיל שלג בסביבות השעה ${currentHour}:00`,
+                        class: 'change-rain-start'
+                    });
+                }
+            }
+            
+            return changes;
+        }
+        
         function getWeatherForecast() {
             const baseUrl = "https://api.openweathermap.org/data/2.5/forecast";
-            const url = `${baseUrl}?q=${cityLocation}&appid=${apiKey}&units=metric&cnt=8`;
+            const url = `${baseUrl}?q=${cityLocation}&appid=${apiKey}&units=metric&cnt=16`; // נשנה ל-16 כדי לקבל יותר נתונים שעתיים
             
             // Show loading, hide results and error
             loadingElement.style.display = 'block';
@@ -602,8 +787,31 @@
                     return response.json();
                 })
                 .then(data => {
-                    const weatherInfo = parseTomorrowWeather(data);
-                    displayResults(data.city, weatherInfo);
+                    // חילוץ התחזית למחר
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                    
+                    // סינון התחזיות רק לגבי מחר
+                    const tomorrowForecasts = data.list.filter(item => 
+                        item.dt_txt.startsWith(tomorrowStr)
+                    );
+                    
+                    // התחזית הראשונה היא הבסיס להמלצות הלבוש
+                    const mainForecast = tomorrowForecasts.length > 0 ? tomorrowForecasts[0] : data.list[0];
+                    
+                    // יצירת אובייקט מידע על התחזית
+                    const weatherInfo = {
+                        avgTemp: mainForecast.main.temp,
+                        minTemp: mainForecast.main.temp_min,
+                        maxTemp: mainForecast.main.temp_max,
+                        condition: mainForecast.weather[0].main,
+                        description: mainForecast.weather[0].description,
+                        tomorrow: tomorrow
+                    };
+                    
+                    // הצגת התוצאות
+                    displayResults(data.city, weatherInfo, tomorrowForecasts);
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -686,7 +894,7 @@
             return 'hot';
         }
         
-        function displayResults(cityInfo, weatherInfo) {
+        function displayResults(cityInfo, weatherInfo, hourlyForecasts) {
             // Format the date in Hebrew
             const tomorrow = weatherInfo.tomorrow;
             const dayName = daysHebrew[tomorrow.toLocaleDateString('en-US', { weekday: 'long' })];
@@ -722,6 +930,42 @@
                 weatherReminderElement.style.display = 'block';
             } else {
                 weatherReminderElement.style.display = 'none';
+            }
+            
+            // זיהוי והצגת שינויי מזג אוויר
+            const weatherChanges = detectWeatherChanges(hourlyForecasts);
+            
+            if (weatherChanges.length > 0) {
+                // יש שינויים משמעותיים - נציג אותם
+                weatherChangesList.innerHTML = '';
+                
+                weatherChanges.forEach(change => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'weather-changes-item';
+                    
+                    const iconSpan = document.createElement('span');
+                    iconSpan.className = 'weather-changes-icon';
+                    iconSpan.textContent = change.icon;
+                    
+                    const timeSpan = document.createElement('span');
+                    timeSpan.className = 'weather-changes-time';
+                    timeSpan.textContent = change.time + ':';
+                    
+                    const textSpan = document.createElement('span');
+                    textSpan.className = `weather-changes-text ${change.class}`;
+                    textSpan.textContent = change.text;
+                    
+                    listItem.appendChild(iconSpan);
+                    listItem.appendChild(timeSpan);
+                    listItem.appendChild(textSpan);
+                    
+                    weatherChangesList.appendChild(listItem);
+                });
+                
+                weatherChangesContainer.style.display = 'block';
+            } else {
+                // אין שינויים משמעותיים - נסתיר את האזור
+                weatherChangesContainer.style.display = 'none';
             }
             
             // Update the DOM
