@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מה ללבוש לבית הספר מחר? - מזכרת בתיה</title>
+    <title>מה ללבוש לבית הספר מחר?</title>
+    <!-- PWA meta tags -->
+    <meta name="description" content="אפליקציה לילדים שעוזרת להחליט מה ללבוש לבית הספר מחר לפי מזג האוויר">
+    <meta name="theme-color" content="#4D96FF">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <style>
         :root {
             --primary: #4D96FF;
@@ -13,6 +19,20 @@
             --text: #343A40;
             --success: #6BCB77;
             --warning: #ff9800;
+            --card-bg: white;
+            --footer-bg: #f8f9fa;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #375C99;
+            --secondary: #A94848;
+            --accent: #B59646;
+            --background: #1F2329;
+            --text: #E1E5EB;
+            --success: #4D8A57;
+            --warning: #B36A00;
+            --card-bg: #2A303C;
+            --footer-bg: #2A303C;
         }
         
         * {
@@ -28,6 +48,7 @@
             font-size: 18px;
             line-height: 1.6;
             padding-bottom: 30px;
+            transition: background-color 0.3s, color 0.3s;
         }
         
         .container {
@@ -36,52 +57,25 @@
             padding: 15px;
         }
         
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 25px 20px;
+        .result {
+            display: none;
+            background-color: var(--card-bg);
             border-radius: 15px;
-            margin-bottom: 25px;
-            text-align: center;
+            padding: 0;
+            margin-top: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-        }
-        
-        h1 {
-            font-size: 2.3rem;
-            margin-bottom: 5px;
-        }
-        
-        .mascot {
-            max-width: 130px;
-            margin: 10px auto;
-            display: block;
-            animation: bob 3s infinite ease-in-out;
-        }
-        
-        @keyframes bob {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .location-badge {
-            background-color: white;
-            color: var(--primary);
-            padding: 10px 20px;
-            border-radius: 30px;
-            display: inline-block;
-            margin-top: 15px;
-            font-weight: bold;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-            font-size: 1.1rem;
+            overflow: hidden;
+            transition: background-color 0.3s;
         }
         
         .loading {
             text-align: center;
             margin: 40px 0;
             padding: 30px 20px;
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transition: background-color 0.3s;
         }
         
         .loading img {
@@ -94,22 +88,12 @@
             100% { transform: rotate(360deg); }
         }
         
-        .result {
-            display: none;
-            background-color: white;
-            border-radius: 15px;
-            padding: 0;
-            margin-top: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
-        }
-        
         .weather-info {
             text-align: center;
             padding: 25px 15px;
             position: relative;
             color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
             overflow: hidden;
         }
         
@@ -244,13 +228,16 @@
             margin: 15px auto 5px auto;
         }
         
-        .sunrise, .sunset {
+        .sunset {
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
-        .main-recommendation {
+        .main-recommendation-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background-color: var(--primary);
             color: white;
             padding: 15px 20px;
@@ -258,6 +245,30 @@
             font-weight: bold;
             text-align: center;
             margin-bottom: 10px;
+            gap: 15px;
+        }
+        
+        .main-recommendation {
+            flex-grow: 1;
+        }
+        
+        .speak-button {
+            background-color: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .speak-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
         
         .day-indicator {
@@ -281,12 +292,27 @@
             margin-bottom: 15px;
         }
         
+        [data-theme="dark"] .weather-comparison {
+            background-color: #193c43;
+            color: #cff4fc;
+        }
+        
+        [data-theme="dark"] .day-indicator {
+            background-color: #3e1a1d;
+            color: #f8d7da;
+        }
+        
         .important-reminder {
             background-color: #fdebd0;
             border-left: 5px solid #f39c12;
             padding: 15px 20px;
             margin: 15px 0;
             font-weight: bold;
+        }
+        
+        [data-theme="dark"] .important-reminder {
+            background-color: #3d3525;
+            color: #fdebd0;
         }
         
         .clothing-container {
@@ -302,6 +328,11 @@
             border-radius: 12px;
             border-top: 5px solid var(--primary);
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+        
+        [data-theme="dark"] .clothing-section {
+            background-color: #252d3d;
         }
         
         .clothing-section h3 {
@@ -325,9 +356,17 @@
             transition: all 0.3s;
         }
         
+        [data-theme="dark"] .clothing-list li {
+            background-color: rgba(0,0,0,0.2);
+        }
+        
         .clothing-list li:hover {
             background-color: rgba(255,255,255,0.9);
             transform: translateX(-5px);
+        }
+        
+        [data-theme="dark"] .clothing-list li:hover {
+            background-color: rgba(255,255,255,0.1);
         }
         
         .clothing-list li::before {
@@ -364,10 +403,15 @@
         .item-water::before { content: "💧"; }
         .item-sunscreen::before { content: "🧴"; }
         .item-pencil::before { content: "✏️"; }
+        .item-food::before { content: "🥪"; }
         
         .weather-specific {
             background-color: #ffefef;
             border-top-color: var(--secondary);
+        }
+        
+        [data-theme="dark"] .weather-specific {
+            background-color: #3d2929;
         }
         
         .weather-specific h3 {
@@ -400,12 +444,21 @@
             list-style-type: none;
         }
         
+        [data-theme="dark"] .weather-changes-list {
+            background-color: #3d3525;
+            color: #fff3e0;
+        }
+        
         .weather-changes-item {
             padding: 15px;
             border-bottom: 1px solid #ffe0b2;
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+        
+        [data-theme="dark"] .weather-changes-item {
+            border-bottom-color: #554935;
         }
         
         .weather-changes-item:last-child {
@@ -442,6 +495,22 @@
             color: #388e3c;
         }
         
+        [data-theme="dark"] .change-temperature-up {
+            color: #ffab70;
+        }
+        
+        [data-theme="dark"] .change-temperature-down {
+            color: #7bb5db;
+        }
+        
+        [data-theme="dark"] .change-rain-start {
+            color: #7bb5db;
+        }
+        
+        [data-theme="dark"] .change-rain-end {
+            color: #8aba92;
+        }
+        
         .error-message {
             display: none;
             background-color: #ffdddd;
@@ -451,6 +520,11 @@
             text-align: center;
             margin: 20px 0;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        [data-theme="dark"] .error-message {
+            background-color: #582929;
+            color: #ffdddd;
         }
         
         .refresh-button {
@@ -475,6 +549,10 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
         }
         
+        [data-theme="dark"] .refresh-button:hover {
+            background-color: #407a48;
+        }
+        
         .refresh-button:active {
             transform: translateY(1px);
         }
@@ -487,15 +565,109 @@
             padding: 0 20px;
         }
         
+        [data-theme="dark"] .update-time {
+            color: #aaa;
+        }
+        
+        /* Fact of the day section */
+        .fact-container {
+            background-color: #e3f2fd;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        [data-theme="dark"] .fact-container {
+            background-color: #1e3a5a;
+        }
+        
+        .fact-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .fact-content {
+            margin-bottom: 15px;
+            min-height: 60px;
+        }
+        
+        .fact-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .fact-button:hover {
+            background-color: #3a82e5;
+            transform: translateY(-2px);
+        }
+        
+        [data-theme="dark"] .fact-button:hover {
+            background-color: #2c5a9e;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
         footer {
             text-align: center;
             margin-top: 30px;
             padding: 20px 15px;
             color: #666;
             font-size: 0.9rem;
-            background-color: #f8f9fa;
+            background-color: var(--footer-bg);
             border-radius: 15px;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        [data-theme="dark"] footer {
+            color: #aaa;
+        }
+        
+        /* Theme toggle button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            transform: rotate(30deg);
         }
         
         @media (max-width: 600px) {
@@ -505,10 +677,6 @@
             
             .container {
                 padding: 12px;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
             }
             
             .clothing-container {
@@ -533,7 +701,7 @@
                 font-size: 2.5rem;
             }
             
-            .main-recommendation {
+            .main-recommendation-container {
                 font-size: 1.1rem;
                 padding: 12px 15px;
             }
@@ -555,22 +723,24 @@
             .weather-changes-time {
                 min-width: 70px;
             }
+            
+            .theme-toggle {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+                top: 10px;
+                left: 10px;
+            }
         }
     </style>
 </head>
 <body>
+    <button class="theme-toggle" id="theme-toggle">🌓</button>
+    
     <div class="container">
-        <header>
-            <h1>מה ללבוש לבית הספר מחר?</h1>
-            <img src="https://cdn.pixabay.com/photo/2020/12/28/14/30/child-5867030_1280.png" alt="דמות מצוירת" class="mascot">
-            <div class="location-badge">
-                <span style="font-size: 1.2rem; margin-left: 5px;">📍</span> מזכרת בתיה
-            </div>
-        </header>
-        
         <div class="loading" id="loading">
-            <img src="https://cdn.pixabay.com/photo/2017/09/25/13/14/emoji-2785528_1280.png" alt="טוען..." style="max-width:80px;">
-            <p>בודק את מזג האוויר למחר במזכרת בתיה...</p>
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgc3Ryb2tlPSIjNEQ5NkZGIiBzdHJva2Utd2lkdGg9IjgiIGZpbGw9Im5vbmUiIHN0cm9rZS1kYXNoYXJyYXk9IjI1MSAyNDEiPjxhbmltYXRlVHJhbnNmb3JtIGF0dHJpYnV0ZU5hbWU9InRyYW5zZm9ybSIgdHlwZT0icm90YXRlIiBmcm9tPSIwIDUwIDUwIiB0bz0iMzYwIDUwIDUwIiBkdXI9IjJzIiByZXBlYXRDb3VudD0iaW5kZWZpbml0ZSIvPjwvY2lyY2xlPjwvc3ZnPg==" alt="טוען...">
+            <p>בודק את מזג האוויר למחר...</p>
         </div>
         
         <div class="error-message" id="error">
@@ -581,7 +751,7 @@
         
         <div class="result" id="result">
             <div class="weather-info" id="weather-info">
-                <div class="weather-main">מזכרת בתיה</div>
+                <div class="weather-main" id="weather-title">מה ללבוש לבית הספר מחר?</div>
                 <div class="weather-date" id="date">יום רביעי, 27 פברואר</div>
                 
                 <div class="weather-details">
@@ -592,19 +762,18 @@
                 <div class="weather-desc" id="weather-desc">בהיר</div>
                 
                 <div class="sun-times">
-                    <div class="sunrise">
-                        <span>🌅</span>
-                        <span id="sunrise-time">06:38</span>
-                    </div>
                     <div class="sunset">
-                        <span>🌇</span>
+                        <span>שקיעה:</span>
                         <span id="sunset-time">17:22</span>
                     </div>
                 </div>
             </div>
             
-            <div class="main-recommendation" id="main-recommendation">
-                מומלץ ללבוש חולצה קצרה ולקחת מטריה!
+            <div class="main-recommendation-container">
+                <div class="main-recommendation" id="main-recommendation">
+                    מומלץ ללבוש חולצה קצרה ולקחת מטריה!
+                </div>
+                <button class="speak-button" id="speak-button" title="השמע המלצה">🔊</button>
             </div>
             
             <div class="day-indicator" id="day-indicator">
@@ -640,13 +809,24 @@
                 </ul>
             </div>
             
+            <div class="fact-container" id="fact-container">
+                <div class="fact-title">
+                    <span>💡</span>
+                    <span>הידעת?</span>
+                </div>
+                <div class="fact-content" id="fact-content">
+                    הגוף שלנו מפיק חום כשקר לנו, ולכן שכבות רבות של בגדים שומרות על חום הגוף טוב יותר מבגד עבה אחד!
+                </div>
+                <button class="fact-button" id="fact-button">עובדה חדשה</button>
+            </div>
+            
             <p class="update-time" id="update-time">עודכן לאחרונה: 26 פברואר, 12:34</p>
             
             <button class="refresh-button" onclick="window.location.reload()">רענן נתונים</button>
         </div>
         
         <footer>
-            <p>נוצר עבור ילדי בית הספר במזכרת בתיה שרוצים לדעת מה ללבוש מחר 😊</p>
+            <p>נוצר עבור ילדי בית הספר שרוצים לדעת מה ללבוש מחר 😊</p>
         </footer>
     </div>
 
@@ -723,6 +903,7 @@
             'מכנסיים עבים': 'item-pants',
             'חצאית': 'item-skirt',
             'חצאית עם טייץ': 'item-skirt',
+            'חצאית עם גרביון': 'item-skirt',
             
             // Accessories
             'כובע': 'item-hat',
@@ -751,10 +932,11 @@
             'בקבוק מים גדול': 'item-water',
             'קלמר': 'item-pencil',
             'קרם הגנה': 'item-sunscreen',
-            'שקית ניילון': 'item-bag'
+            'שקית ניילון': 'item-bag',
+            'ארוחת 10': 'item-food'
         };
         
-        // Clothing recommendations based on temperature ranges (adjusted for kids going to school)
+        // Clothing recommendations based on temperature and gender
         const clothingRules = {
             'very_cold': {  // Below 0°C
                 'tops': [
@@ -762,10 +944,17 @@
                     'סוודר חם',
                     'מעיל חורף עבה'
                 ],
-                'bottoms': [
-                    'מכנסיים ארוכים עבים',
-                    'טייץ תרמי מתחת למכנסיים'
-                ],
+                'bottoms': {
+                    'boys': [
+                        'מכנסיים ארוכים עבים',
+                        'טייץ תרמי מתחת למכנסיים'
+                    ],
+                    'girls': [
+                        'מכנסיים ארוכים עבים',
+                        'חצאית עם גרביון עבה',
+                        'טייץ תרמי מתחת למכנסיים או חצאית'
+                    ]
+                },
                 'accessories': [
                     'כפפות חמות'
                 ],
@@ -775,7 +964,8 @@
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
                     'בקבוק מים',
-                    'קלמר עם כל הציוד'
+                    'קלמר עם כל הציוד',
+                    'ארוחת 10'
                 ]
             },
             'cold': {  // 0-10°C
@@ -784,9 +974,15 @@
                     'סוודר',
                     'מעיל חורף'
                 ],
-                'bottoms': [
-                    'מכנסיים ארוכים'
-                ],
+                'bottoms': {
+                    'boys': [
+                        'מכנסיים ארוכים'
+                    ],
+                    'girls': [
+                        'מכנסיים ארוכים',
+                        'חצאית עם גרביון עבה'
+                    ]
+                },
                 'accessories': [],
                 'footwear': [
                     'נעליים סגורות'
@@ -794,7 +990,8 @@
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
                     'בקבוק מים',
-                    'קלמר עם כל הציוד'
+                    'קלמר עם כל הציוד',
+                    'ארוחת 10'
                 ]
             },
             'cool': {  // 10-18°C
@@ -802,9 +999,15 @@
                     'חולצת בית ספר עם שרוול ארוך',
                     'סווטשירט או קפוצ׳ון קל'
                 ],
-                'bottoms': [
-                    'מכנסיים ארוכים'
-                ],
+                'bottoms': {
+                    'boys': [
+                        'מכנסיים ארוכים'
+                    ],
+                    'girls': [
+                        'מכנסיים ארוכים',
+                        'חצאית עם גרביון או טייץ'
+                    ]
+                },
                 'accessories': [],
                 'footwear': [
                     'נעליים סגורות'
@@ -812,7 +1015,8 @@
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
                     'בקבוק מים',
-                    'קלמר עם כל הציוד'
+                    'קלמר עם כל הציוד',
+                    'ארוחת 10'
                 ]
             },
             'mild': {  // 18-24°C
@@ -820,10 +1024,15 @@
                     'חולצת בית ספר קצרה',
                     'קפוצ׳ון או סווטשירט דק (למקרה שיהיה קריר)'
                 ],
-                'bottoms': [
-                    'מכנסיים ארוכים קלים',
-                    'חצאית עם טייץ (לבנות)'
-                ],
+                'bottoms': {
+                    'boys': [
+                        'מכנסיים ארוכים קלים'
+                    ],
+                    'girls': [
+                        'מכנסיים ארוכים קלים',
+                        'חצאית עם טייץ דק'
+                    ]
+                },
                 'accessories': [],
                 'footwear': [
                     'נעליים סגורות'
@@ -831,18 +1040,25 @@
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
                     'בקבוק מים',
-                    'קלמר עם כל הציוד'
+                    'קלמר עם כל הציוד',
+                    'ארוחת 10'
                 ]
             },
             'warm': {  // 24-29°C
                 'tops': [
                     'חולצת בית ספר קצרה'
                 ],
-                'bottoms': [
-                    'מכנסיים קצרים (אם מותר בבית הספר)',
-                    'מכנסיים ארוכים קלים',
-                    'חצאית (לבנות, אם מותר בבית הספר)'
-                ],
+                'bottoms': {
+                    'boys': [
+                        'מכנסיים קצרים (אם מותר בבית הספר)',
+                        'מכנסיים ארוכים קלים'
+                    ],
+                    'girls': [
+                        'מכנסיים קצרים (אם מותר בבית הספר)',
+                        'מכנסיים ארוכים קלים',
+                        'חצאית'
+                    ]
+                },
                 'accessories': [
                     'כובע שמש'
                 ],
@@ -852,18 +1068,25 @@
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
                     'בקבוק מים גדול',
-                    'קלמר עם כל הציוד'
+                    'קלמר עם כל הציוד',
+                    'ארוחת 10'
                 ]
             },
             'hot': {  // Above 29°C
                 'tops': [
                     'חולצת בית ספר קצרה וקלה'
                 ],
-                'bottoms': [
-                    'מכנסיים קצרים (אם מותר בבית הספר)',
-                    'מכנסיים ארוכים קלים מאוד',
-                    'חצאית (לבנות, אם מותר בבית הספר)'
-                ],
+                'bottoms': {
+                    'boys': [
+                        'מכנסיים קצרים (אם מותר בבית הספר)',
+                        'מכנסיים ארוכים קלים מאוד'
+                    ],
+                    'girls': [
+                        'מכנסיים קצרים (אם מותר בבית הספר)',
+                        'מכנסיים ארוכים קלים מאוד',
+                        'חצאית'
+                    ]
+                },
                 'accessories': [
                     'כובע שמש'
                 ],
@@ -873,7 +1096,8 @@
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
                     'בקבוק מים גדול (לפחות ליטר)',
-                    'קלמר עם כל הציוד'
+                    'קלמר עם כל הציוד',
+                    'ארוחת 10'
                 ]
             }
         };
@@ -985,7 +1209,30 @@
             'hot': 'מומלץ ללבוש בגדים קלים וקחו הרבה מים!'
         };
         
-        // OpenWeatherMap API key - הכנס את המפתח שלך כאן
+        // מערך עובדות מעניינות על מזג אוויר ולבוש
+        const weatherFacts = [
+            "הגוף שלנו מפיק חום כשקר לנו, ולכן שכבות רבות של בגדים שומרות על חום הגוף טוב יותר מבגד עבה אחד!",
+            "האם ידעתם שהתלבושת האחידה לבית הספר הומצאה באנגליה לפני יותר מ-500 שנה?",
+            "ביום חם, בגדים בצבע לבן הם הכי טובים כי הם מחזירים את קרני השמש!",
+            "הידעתם? ענן גשם טיפוסי שוקל בערך כמו 100 פילים!",
+            "הצבע הכחול של השמיים נוצר כתוצאה מפיזור האור של השמש באטמוספירה.",
+            "בסופת ברקים, אם אתם סופרים את השניות בין הברק לרעם וחלקו ב-3, תקבלו את המרחק בקילומטרים!",
+            "לפני המצאת מד-הטמפרטורה, אנשים הגדירו את הטמפרטורה לפי כמה צרצרים מצייצים בדקה!",
+            "כשיורד שלג, כל פתית שלג הוא בעל צורה ייחודית - אין שני פתיתים זהים!",
+            "השמש מחממת את האוויר ליד פני הקרקע, והאוויר החם עולה למעלה, וכך נוצרת הרוח.",
+            "ביום גשום, הצבע האדום של מטריה נראה למרחק הגדול ביותר!",
+            "בקיץ, אם אתה שותה מספיק מים, הגוף שומר על טמפרטורה קבועה של 37 מעלות, גם כשבחוץ חם מאוד.",
+            "הידעת? בחורף, אנחנו מאבדים כ-30% מחום הגוף דרך הראש אם הוא לא מכוסה!",
+            "ביום קר, מומלץ לשתות משקאות חמים, אבל לא רותחים - הם עוזרים לגוף לשמור על חום.",
+            "האם ידעתם שיש לנו יותר תאי הזעה (כ-3 מיליון) מאשר תאים שחשים את הקור?",
+            "בזמן גשם, האדמה משחררת ריח מיוחד שנקרא 'פטריקור' שרבים אוהבים.",
+            "הידעת? הרוח החזקה ביותר שנמדדה אי פעם הייתה במהירות של 408 קמ״ש!",
+            "בגדים עם כיסים רבים הומצאו במקור עבור חיילים שהיו צריכים לשאת ציוד רב.",
+            "הידעת? אם לובשים גרביים לפני השינה בלילה קר, הגוף מתחמם מהר יותר!",
+            "בחורף, אם אתה לובש בגדים בשכבות, אתה יכול להסיר שכבה כשנעשה חם ולהוסיף כשקר."
+        ];
+        
+        // OpenWeatherMap API key
         const apiKey = "64319aab490fe096e4759d3f342c1d2e";
         
         // שימוש בשם משתנה שונה מ-location (שהוא מובנה בדפדפן)
@@ -1011,11 +1258,106 @@
         const mainRecommendationElement = document.getElementById('main-recommendation');
         const dayIndicatorElement = document.getElementById('day-indicator');
         const weatherComparisonElement = document.getElementById('weather-comparison');
-        const sunriseTimeElement = document.getElementById('sunrise-time');
         const sunsetTimeElement = document.getElementById('sunset-time');
+        const weatherTitleElement = document.getElementById('weather-title');
+        const speakButton = document.getElementById('speak-button');
+        const factContentElement = document.getElementById('fact-content');
+        const factButton = document.getElementById('fact-button');
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // Gender for clothing recommendations (can be switched by user preference)
+        let selectedGender = 'boys'; // Default to boys
+        
+        // Function to toggle dark/light theme
+        function toggleTheme() {
+            const body = document.body;
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌓';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '☀️';
+            }
+        }
+        
+        // Initialize theme from localStorage
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+            }
+        }
+        
+        // Initialize gender from localStorage
+        function initGender() {
+            const savedGender = localStorage.getItem('gender');
+            if (savedGender) {
+                selectedGender = savedGender;
+            }
+        }
+        
+        // Function to speak text using SpeechSynthesis
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'he-IL'; // Hebrew language
+                utterance.rate = 0.9; // Slightly slower rate for clarity
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('לצערנו, הדפדפן שלך לא תומך בהקראה.');
+            }
+        }
+        
+        // Function to show a random weather fact
+        function showRandomFact() {
+            const randomIndex = Math.floor(Math.random() * weatherFacts.length);
+            factContentElement.classList.remove('fade-in');
+            
+            // Trigger reflow to restart animation
+            void factContentElement.offsetWidth;
+            
+            factContentElement.textContent = weatherFacts[randomIndex];
+            factContentElement.classList.add('fade-in');
+        }
         
         // Load weather data when page loads
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize theme
+            initTheme();
+            
+            // Initialize gender
+            initGender();
+            
+            // Add event listener for theme toggle button
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // Add event listener for speak button
+            speakButton.addEventListener('click', function() {
+                speakText(mainRecommendationElement.textContent);
+            });
+            
+            // Add event listener for fact button
+            factButton.addEventListener('click', showRandomFact);
+            
+            // Service Worker Registration for PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            }
+            
+            // Load weather data
             getWeatherForecast();
         });
         
@@ -1165,9 +1507,9 @@
                 })
             ])
             .then(([todayData, tomorrowData]) => {
-                // Extract today's temperature
+                // Extract today's temperature and city name
                 const todayTemp = todayData.main.temp;
-                const sunriseTime = formatTime(todayData.sys.sunrise);
+                const cityName = todayData.name;
                 const sunsetTime = formatTime(todayData.sys.sunset);
                 
                 // Extract tomorrow's forecasts
@@ -1192,9 +1534,15 @@
                     description: mainForecast.weather[0].description,
                     tomorrow: tomorrow,
                     todayTemp: todayTemp,
-                    sunriseTime: sunriseTime,
+                    cityName: cityName,
                     sunsetTime: sunsetTime
                 };
+                
+                // Update page title to include city name
+                document.title = `מה ללבוש לבית הספר מחר? - ${cityName}`;
+                
+                // Update weather title to include city name
+                weatherTitleElement.textContent = `מה ללבוש לבית הספר מחר ב${cityName}?`;
                 
                 // Display the results
                 displayResults(tomorrowData.city, weatherInfo, tomorrowForecasts);
@@ -1241,7 +1589,7 @@
             
             // הצג רק קטגוריות עם פריטים
             categories.forEach(category => {
-                if (category.items && category.items.length > 0) {
+                if (category.items && (Array.isArray(category.items) ? category.items.length > 0 : Object.keys(category.items).length > 0)) {
                     const section = document.createElement('div');
                     section.className = 'clothing-section';
                     
@@ -1252,20 +1600,42 @@
                     list.className = 'clothing-list';
                     list.id = category.id;
                     
-                    category.items.forEach(item => {
-                        const li = document.createElement('li');
+                    // בדיקה אם יש תת-קטגוריות לפי מגדר
+                    if (category.id === 'bottoms' && typeof category.items === 'object' && !Array.isArray(category.items)) {
+                        // השתמש בקטגוריה המגדרית הנבחרת
+                        const genderItems = category.items[selectedGender] || [];
                         
-                        // הוסף מחלקת CSS לפי סוג הפריט
-                        for (const [itemText, className] of Object.entries(clothingItemClasses)) {
-                            if (item.includes(itemText)) {
-                                li.className = className;
-                                break;
+                        genderItems.forEach(item => {
+                            const li = document.createElement('li');
+                            
+                            // הוסף מחלקת CSS לפי סוג הפריט
+                            for (const [itemText, className] of Object.entries(clothingItemClasses)) {
+                                if (item.includes(itemText)) {
+                                    li.className = className;
+                                    break;
+                                }
                             }
-                        }
-                        
-                        li.textContent = item;
-                        list.appendChild(li);
-                    });
+                            
+                            li.textContent = item;
+                            list.appendChild(li);
+                        });
+                    } else if (Array.isArray(category.items)) {
+                        // רשימה רגילה של פריטים
+                        category.items.forEach(item => {
+                            const li = document.createElement('li');
+                            
+                            // הוסף מחלקת CSS לפי סוג הפריט
+                            for (const [itemText, className] of Object.entries(clothingItemClasses)) {
+                                if (item.includes(itemText)) {
+                                    li.className = className;
+                                    break;
+                                }
+                            }
+                            
+                            li.textContent = item;
+                            list.appendChild(li);
+                        });
+                    }
                     
                     section.appendChild(heading);
                     section.appendChild(list);
@@ -1337,8 +1707,7 @@
                 weatherComparisonElement.style.display = 'none';
             }
             
-            // Set sunrise/sunset times
-            sunriseTimeElement.textContent = weatherInfo.sunriseTime || '06:00';
+            // Set sunset time
             sunsetTimeElement.textContent = weatherInfo.sunsetTime || '18:00';
             
             // הגדרת מחלקת רקע לפי מזג האוויר
@@ -1425,10 +1794,106 @@
             const minutes = String(now.getMinutes()).padStart(2, '0');
             updateTimeElement.textContent = `עודכן לאחרונה: ${day} ${month}, ${hours}:${minutes}`;
             
+            // Show random weather fact
+            showRandomFact();
+            
             // Hide loading, show results
             loadingElement.style.display = 'none';
             resultElement.style.display = 'block';
         }
+    </script>
+    
+    <!-- Service Worker Registration for PWA -->
+    <script>
+        // Contents for service-worker.js
+        // This will be used to create a separate file
+        /*
+        const CACHE_NAME = 'school-weather-v1';
+        const urlsToCache = [
+            '/',
+            '/index.html',
+            '/manifest.json',
+            '/favicon.ico',
+            '/icons/icon-192x192.png',
+            '/icons/icon-512x512.png'
+        ];
+        
+        self.addEventListener('install', event => {
+            event.waitUntil(
+                caches.open(CACHE_NAME)
+                .then(cache => {
+                    return cache.addAll(urlsToCache);
+                })
+            );
+        });
+        
+        self.addEventListener('fetch', event => {
+            event.respondWith(
+                caches.match(event.request)
+                .then(response => {
+                    if (response) {
+                        return response;
+                    }
+                    return fetch(event.request)
+                    .then(response => {
+                        if (!response || response.status !== 200 || response.type !== 'basic') {
+                            return response;
+                        }
+                        
+                        const responseToCache = response.clone();
+                        
+                        caches.open(CACHE_NAME)
+                        .then(cache => {
+                            cache.put(event.request, responseToCache);
+                        });
+                        
+                        return response;
+                    });
+                })
+            );
+        });
+        
+        self.addEventListener('activate', event => {
+            const cacheWhitelist = [CACHE_NAME];
+            event.waitUntil(
+                caches.keys().then(cacheNames => {
+                    return Promise.all(
+                        cacheNames.map(cacheName => {
+                            if (cacheWhitelist.indexOf(cacheName) === -1) {
+                                return caches.delete(cacheName);
+                            }
+                        })
+                    );
+                })
+            );
+        });
+        */
+        
+        // Contents for manifest.json
+        // This will be used to create a separate file
+        /*
+        {
+            "name": "מה ללבוש לבית הספר מחר?",
+            "short_name": "מה ללבוש?",
+            "description": "אפליקציה לילדים שעוזרת להחליט מה ללבוש לבית הספר מחר לפי מזג האוויר",
+            "start_url": "/",
+            "display": "standalone",
+            "background_color": "#4D96FF",
+            "theme_color": "#4D96FF",
+            "icons": [
+                {
+                    "src": "icons/icon-192x192.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                },
+                {
+                    "src": "icons/icon-512x512.png",
+                    "sizes": "512x512",
+                    "type": "image/png"
+                }
+            ]
+        }
+        */
     </script>
 </body>
 </html>
