@@ -571,7 +571,7 @@
         
         // OpenWeatherMap API key - הכנס את המפתח שלך כאן
         const apiKey = "64319aab490fe096e4759d3f342c1d2e";
-        const location = "Mazkeret Batya,IL";
+        const locationb = "Mazkeret Batya,IL";
         
         // DOM elements
         const loadingElement = document.getElementById('loading');
@@ -598,7 +598,7 @@
         
         function getWeatherForecast() {
             const baseUrl = "https://api.openweathermap.org/data/2.5/forecast";
-            const url = `${baseUrl}?q=${location}&appid=${apiKey}&units=metric&cnt=8`;
+            const url = `${baseUrl}?q=${locationb}&appid=${apiKey}&units=metric&cnt=8`;
             
             // Show loading, hide results and error
             loadingElement.style.display = 'block';
