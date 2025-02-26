@@ -96,6 +96,16 @@
             border-radius: 10px;
         }
         
+        .important-reminder {
+            background-color: #fdebd0;
+            border: 2px solid #f39c12;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
         .clothing-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -255,6 +265,10 @@
                 </p>
             </div>
             
+            <div id="weather-reminder" class="important-reminder" style="display:none">
+                <span style="font-size:1.3rem;">💧</span> זכרו לשתות הרבה מים מחר!
+            </div>
+            
             <div class="clothing-container">
                 <div class="clothing-section">
                     <h3>חלק עליון</h3>
@@ -273,7 +287,7 @@
                 <div class="clothing-section">
                     <h3>אביזרים ופריטים נוספים</h3>
                     <ul class="clothing-list" id="accessories">
-                        <li class="accessory">כובע</li>
+                        <li class="accessory">כובע שמש</li>
                     </ul>
                 </div>
                 
@@ -375,17 +389,14 @@
                     'טייץ תרמי מתחת למכנסיים'
                 ],
                 'accessories': [
-                    'כובע חם',
-                    'צעיף',
-                    'כפפות',
-                    'גרביים עבים'
+                    'כפפות חמות'
                 ],
                 'footwear': [
                     'נעליים סגורות עם גרביים עבות'
                 ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
-                    'בקבוק מים חם (תה או מרק)',
+                    'בקבוק מים',
                     'קלמר עם כל הציוד'
                 ]
             },
@@ -398,10 +409,7 @@
                 'bottoms': [
                     'מכנסיים ארוכים'
                 ],
-                'accessories': [
-                    'כובע',
-                    'צעיף'
-                ],
+                'accessories': [],
                 'footwear': [
                     'נעליים סגורות'
                 ],
@@ -419,9 +427,7 @@
                 'bottoms': [
                     'מכנסיים ארוכים'
                 ],
-                'accessories': [
-                    'כובע (אם יוצאים החוצה)'
-                ],
+                'accessories': [],
                 'footwear': [
                     'נעליים סגורות'
                 ],
@@ -440,9 +446,7 @@
                     'מכנסיים ארוכים קלים',
                     'חצאית עם טייץ (לבנות)'
                 ],
-                'accessories': [
-                    'כובע (אם יוצאים החוצה)'
-                ],
+                'accessories': [],
                 'footwear': [
                     'נעליים סגורות'
                 ],
@@ -462,15 +466,14 @@
                     'חצאית (לבנות, אם מותר בבית הספר)'
                 ],
                 'accessories': [
-                    'כובע שמש',
-                    'משקפי שמש (אם יוצאים החוצה הרבה)'
+                    'כובע שמש'
                 ],
                 'footwear': [
                     'נעליים סגורות'
                 ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
-                    'בקבוק מים גדול (חשוב לשתות הרבה)',
+                    'בקבוק מים גדול',
                     'קלמר עם כל הציוד'
                 ]
             },
@@ -484,17 +487,15 @@
                     'חצאית (לבנות, אם מותר בבית הספר)'
                 ],
                 'accessories': [
-                    'כובע שמש (חובה!)',
-                    'משקפי שמש (אם יוצאים החוצה הרבה)'
+                    'כובע שמש'
                 ],
                 'footwear': [
                     'סנדלים - שים/י לב לבדוק שאין שיעור ספורט מחר!'
                 ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
-                    'בקבוק מים גדול (לפחות ליטר - חשוב מאוד!)',
-                    'קלמר עם כל הציוד',
-                    'מגבת קטנה (למקרה של הזעה)'
+                    'בקבוק מים גדול (לפחות ליטר)',
+                    'קלמר עם כל הציוד'
                 ]
             }
         };
@@ -528,8 +529,6 @@
                 'title': 'בגלל שיהיה שלג:',
                 'items': [
                     'כפפות חמות',
-                    'צעיף',
-                    'כובע חם',
                     'שקית ניילון לתיק (כדי שהספרים לא יירטבו)'
                 ]
             },
@@ -551,9 +550,7 @@
                 'title': 'בגלל שיהיה יום שמש:',
                 'items': [
                     'קרם הגנה',
-                    'כובע שמש',
-                    'משקפי שמש',
-                    'בקבוק מים גדול'
+                    'משקפי שמש'
                 ]
             }
         };
@@ -581,6 +578,7 @@
         const weatherSpecificTitle = document.getElementById('weather-specific-title');
         const weatherSpecificItems = document.getElementById('weather-specific-items');
         const updateTimeElement = document.getElementById('update-time');
+        const weatherReminderElement = document.getElementById('weather-reminder');
         
         // Load weather data when page loads
         document.addEventListener('DOMContentLoaded', function() {
@@ -717,6 +715,13 @@
                 clothing.footwear = ['מגפיים חמים - שים/י לב לבדוק שאין שיעור ספורט מחר!'];
             } else if (temp >= 29) { // Hot weather
                 clothing.footwear = ['סנדלים - שים/י לב לבדוק שאין שיעור ספורט מחר!'];
+            }
+            
+            // Show water reminder for hot days
+            if (temp >= 25) {
+                weatherReminderElement.style.display = 'block';
+            } else {
+                weatherReminderElement.style.display = 'none';
             }
             
             // Update the DOM
