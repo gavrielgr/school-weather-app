@@ -381,7 +381,6 @@
                     'גרביים עבים'
                 ],
                 'footwear': [
-                    'מגפיים חמים',
                     'נעליים סגורות עם גרביים עבות'
                 ],
                 'school_items': [
@@ -404,8 +403,7 @@
                     'צעיף'
                 ],
                 'footwear': [
-                    'נעליים סגורות',
-                    'מגפיים אם גשום'
+                    'נעליים סגורות'
                 ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
@@ -425,8 +423,7 @@
                     'כובע (אם יוצאים החוצה)'
                 ],
                 'footwear': [
-                    'נעליים סגורות',
-                    'נעלי ספורט נוחות'
+                    'נעליים סגורות'
                 ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
@@ -447,8 +444,7 @@
                     'כובע (אם יוצאים החוצה)'
                 ],
                 'footwear': [
-                    'נעליים סגורות',
-                    'סנדלים (אם מותר בבית הספר)'
+                    'נעליים סגורות'
                 ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
@@ -470,8 +466,7 @@
                     'משקפי שמש (אם יוצאים החוצה הרבה)'
                 ],
                 'footwear': [
-                    'סנדלים (אם מותר בבית הספר)',
-                    'נעליים קלות מאווררות'
+                    'נעליים סגורות'
                 ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
@@ -493,8 +488,7 @@
                     'משקפי שמש (אם יוצאים החוצה הרבה)'
                 ],
                 'footwear': [
-                    'סנדלים (אם מותר בבית הספר)',
-                    'נעליים קלות ומאווררות היטב'
+                    'סנדלים - שים/י לב לבדוק שאין שיעור ספורט מחר!'
                 ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
@@ -512,8 +506,6 @@
                 'items': [
                     'מטריה',
                     'מעיל עמיד למים',
-                    'מגפי גשם - שים/י לב לבדוק שאין שיעור ספורט מחר!',
-                    'נעליים סגורות עמידות למים',
                     'שקית ניילון לתיק (כדי שהספרים לא יירטבו)'
                 ]
             },
@@ -529,15 +521,12 @@
                 'items': [
                     'מטריה חזקה',
                     'מעיל עמיד למים',
-                    'מגפיים עמידים למים - שים/י לב לבדוק שאין שיעור ספורט מחר!',
-                    'נעליים סגורות עמידות למים',
                     'שקית ניילון לתיק (כדי שהספרים לא יירטבו)'
                 ]
             },
             'Snow': {
                 'title': 'בגלל שיהיה שלג:',
                 'items': [
-                    'מגפיים עמידים למים - שים/י לב לבדוק שאין שיעור ספורט מחר!',
                     'כפפות חמות',
                     'צעיף',
                     'כובע חם',
@@ -571,7 +560,9 @@
         
         // OpenWeatherMap API key - הכנס את המפתח שלך כאן
         const apiKey = "64319aab490fe096e4759d3f342c1d2e";
-        const locationb = "Mazkeret Batya,IL";
+        
+        // שימוש בשם משתנה שונה מ-location (שהוא מובנה בדפדפן)
+        const cityLocation = "Mazkeret Batya,IL";
         
         // DOM elements
         const loadingElement = document.getElementById('loading');
@@ -598,7 +589,7 @@
         
         function getWeatherForecast() {
             const baseUrl = "https://api.openweathermap.org/data/2.5/forecast";
-            const url = `${baseUrl}?q=${locationb}&appid=${apiKey}&units=metric&cnt=8`;
+            const url = `${baseUrl}?q=${cityLocation}&appid=${apiKey}&units=metric&cnt=8`;
             
             // Show loading, hide results and error
             loadingElement.style.display = 'block';
@@ -714,10 +705,19 @@
             
             // Get clothing recommendations based on temperature
             const tempCategory = getTemperatureCategory(temp);
-            const clothing = clothingRules[tempCategory];
+            const clothing = JSON.parse(JSON.stringify(clothingRules[tempCategory])); // Deep copy to avoid modifying the original
             
             // Weather-specific recommendations
             const weatherSpecific = weatherConditionItems[weatherInfo.condition] || null;
+            
+            // Override footwear recommendation based on weather condition
+            if (['Rain', 'Thunderstorm', 'Drizzle'].includes(weatherInfo.condition)) {
+                clothing.footwear = ['מגפיים - שים/י לב לבדוק שאין שיעור ספורט מחר!'];
+            } else if (weatherInfo.condition === 'Snow') {
+                clothing.footwear = ['מגפיים חמים - שים/י לב לבדוק שאין שיעור ספורט מחר!'];
+            } else if (temp >= 29) { // Hot weather
+                clothing.footwear = ['סנדלים - שים/י לב לבדוק שאין שיעור ספורט מחר!'];
+            }
             
             // Update the DOM
             dateElement.textContent = formattedDate;
