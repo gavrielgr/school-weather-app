@@ -857,7 +857,7 @@ function displayResults(cityInfo, weatherInfo, hourlyForecasts) {
     sunsetTimeElement.textContent = weatherInfo.sunsetTime || '18:00';
     
     // הגדרת מחלקת רקע לפי מזג האוויר
-    weatherInfoElement.className = 'weather-info ' + weatherInfo.condition.toLowerCase();
+    weatherInfoElement.className = 'weather-info.' + weatherInfo.condition.toLowerCase();
     
     // זיהוי והצגת שינויי מזג אוויר
     const weatherChanges = detectWeatherChanges(hourlyForecasts);
