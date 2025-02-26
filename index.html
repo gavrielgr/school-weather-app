@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מה ללבוש לבית הספר?</title>
+    <title>מה ללבוש לבית הספר מחר? - מזכרת בתיה</title>
     <style>
         :root {
             --primary: #4D96FF;
             --secondary: #FF6B6B;
-            --accent: #FFD166; 
+            --accent: #FFD166;
             --background: #F8F9FA;
             --text: #343A40;
             --success: #6BCB77;
@@ -43,7 +43,6 @@
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
         
         h1 {
             font-size: 2.5rem;
@@ -56,57 +55,24 @@
             display: block;
         }
         
-        .search-box {
+        .location-badge {
             background-color: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        
-        .search-box h2 {
-            margin-bottom: 15px;
             color: var(--primary);
-        }
-        
-        .search-form {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        input {
-            padding: 12px 15px;
-            border: 2px solid var(--primary);
-            border-radius: 10px;
-            font-size: 1.1rem;
-            width: 100%;
-            max-width: 300px;
-        }
-        
-        button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 25px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-        }
-        
-        button:hover {
-            background-color: #3a7fd9;
-            transform: scale(1.05);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .loading {
-            display: none;
             text-align: center;
-            margin: 20px 0;
+            margin: 40px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .loading img {
@@ -178,6 +144,10 @@
             content: "🎒";
         }
         
+        .clothing-list li.footwear::before {
+            content: "👟";
+        }
+        
         .weather-specific {
             background-color: #ffefef;
             border-top-color: var(--secondary);
@@ -197,6 +167,31 @@
             border-radius: 10px;
             text-align: center;
             margin: 20px 0;
+        }
+        
+        .refresh-button {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        
+        .refresh-button:hover {
+            background-color: #56aa64;
+            transform: scale(1.05);
+        }
+        
+        .update-time {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 10px;
         }
         
         footer {
@@ -232,30 +227,26 @@
     <div class="container">
         <header>
             <h1>מה ללבוש לבית הספר מחר?</h1>
-            <img src="/api/placeholder/150/150" alt="דמות מצוירת" class="mascot">
+            <img src="https://cdn.pixabay.com/photo/2020/12/28/14/30/child-5867030_1280.png" alt="דמות מצוירת" class="mascot" style="max-width:150px;">
             <p>בואו נראה איזה בגדים כדאי להכין לבית הספר מחר!</p>
+            <div class="location-badge">
+                <span class="emoji" style="font-size: 1.2rem;">📍</span> מזכרת בתיה
+            </div>
         </header>
         
-        <div class="search-box">
-            <h2>איפה את/ה גר/ה?</h2>
-            <div class="search-form">
-                <input type="text" id="location" placeholder="הכנס שם עיר (לדוגמה: ירושלים)" />
-                <button id="check-weather">בדוק <span class="emoji">🔍</span></button>
-            </div>
-        </div>
-        
-        <div class="loading">
-            <img src="/api/placeholder/80/80" alt="טוען...">
-            <p>בודק את מזג האוויר מחר...</p>
+        <div class="loading" id="loading">
+            <img src="https://cdn.pixabay.com/photo/2017/09/25/13/14/emoji-2785528_1280.png" alt="טוען..." style="max-width:80px;">
+            <p>בודק את מזג האוויר למחר במזכרת בתיה...</p>
         </div>
         
         <div class="error-message" id="error">
-            אופס! לא הצלחתי לקבל את תחזית מזג האוויר. נסה שוב!
+            אופס! לא הצלחתי לקבל את תחזית מזג האוויר. נסה שוב מאוחר יותר!
+            <button class="refresh-button" onclick="window.location.reload()">נסה שוב</button>
         </div>
         
         <div class="result" id="result">
             <div class="weather-info">
-                <h2 id="location-name">ירושלים</h2>
+                <h2>מזכרת בתיה</h2>
                 <p id="date">יום רביעי, 27 פברואר</p>
                 <p>
                     <span id="weather-icon">☀️</span>
@@ -269,7 +260,6 @@
                     <h3>חלק עליון</h3>
                     <ul class="clothing-list" id="tops">
                         <li>חולצת בית ספר קצרה</li>
-                        <li>חולצת בית ספר ארוכה (לשכבה)</li>
                     </ul>
                 </div>
                 
@@ -288,6 +278,13 @@
                 </div>
                 
                 <div class="clothing-section">
+                    <h3>הנעלה</h3>
+                    <ul class="clothing-list" id="footwear">
+                        <li class="footwear">נעליים סגורות</li>
+                    </ul>
+                </div>
+                
+                <div class="clothing-section">
                     <h3>ציוד לבית ספר</h3>
                     <ul class="clothing-list" id="school-items">
                         <li class="school">תיק עם ספרים לפי מערכת</li>
@@ -302,10 +299,14 @@
                     <li>קרם הגנה</li>
                 </ul>
             </div>
+            
+            <p class="update-time" id="update-time">עודכן לאחרונה: 26 פברואר, 12:34</p>
+            
+            <button class="refresh-button" onclick="window.location.reload()">רענן נתונים</button>
         </div>
         
         <footer>
-            <p>נוצר עבור ילדי בית הספר שרוצים לדעת מה ללבוש מחר 😊</p>
+            <p>נוצר עבור ילדי בית הספר במזכרת בתיה שרוצים לדעת מה ללבוש מחר 😊</p>
         </footer>
     </div>
 
@@ -379,6 +380,10 @@
                     'כפפות',
                     'גרביים עבים'
                 ],
+                'footwear': [
+                    'מגפיים חמים',
+                    'נעליים סגורות עם גרביים עבות'
+                ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
                     'בקבוק מים חם (תה או מרק)',
@@ -398,6 +403,10 @@
                     'כובע',
                     'צעיף'
                 ],
+                'footwear': [
+                    'נעליים סגורות',
+                    'מגפיים אם גשום'
+                ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
                     'בקבוק מים',
@@ -414,6 +423,10 @@
                 ],
                 'accessories': [
                     'כובע (אם יוצאים החוצה)'
+                ],
+                'footwear': [
+                    'נעליים סגורות',
+                    'נעלי ספורט נוחות'
                 ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
@@ -432,6 +445,10 @@
                 ],
                 'accessories': [
                     'כובע (אם יוצאים החוצה)'
+                ],
+                'footwear': [
+                    'נעליים סגורות',
+                    'סנדלים (אם מותר בבית הספר)'
                 ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
@@ -452,6 +469,10 @@
                     'כובע שמש',
                     'משקפי שמש (אם יוצאים החוצה הרבה)'
                 ],
+                'footwear': [
+                    'סנדלים (אם מותר בבית הספר)',
+                    'נעליים קלות מאווררות'
+                ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
                     'בקבוק מים גדול (חשוב לשתות הרבה)',
@@ -471,6 +492,10 @@
                     'כובע שמש (חובה!)',
                     'משקפי שמש (אם יוצאים החוצה הרבה)'
                 ],
+                'footwear': [
+                    'סנדלים (אם מותר בבית הספר)',
+                    'נעליים קלות ומאווררות היטב'
+                ],
                 'school_items': [
                     'תיק עם ספרים לפי מערכת',
                     'בקבוק מים גדול (לפחות ליטר - חשוב מאוד!)',
@@ -487,6 +512,7 @@
                 'items': [
                     'מטריה',
                     'מעיל עמיד למים',
+                    'מגפי גשם - שים/י לב לבדוק שאין שיעור ספורט מחר!',
                     'נעליים סגורות עמידות למים',
                     'שקית ניילון לתיק (כדי שהספרים לא יירטבו)'
                 ]
@@ -503,6 +529,7 @@
                 'items': [
                     'מטריה חזקה',
                     'מעיל עמיד למים',
+                    'מגפיים עמידים למים - שים/י לב לבדוק שאין שיעור ספורט מחר!',
                     'נעליים סגורות עמידות למים',
                     'שקית ניילון לתיק (כדי שהספרים לא יירטבו)'
                 ]
@@ -510,7 +537,7 @@
             'Snow': {
                 'title': 'בגלל שיהיה שלג:',
                 'items': [
-                    'מגפיים עמידים למים',
+                    'מגפיים עמידים למים - שים/י לב לבדוק שאין שיעור ספורט מחר!',
                     'כפפות חמות',
                     'צעיף',
                     'כובע חם',
@@ -542,18 +569,14 @@
             }
         };
         
-        // OpenWeatherMap API key - REPLACE WITH YOUR OWN
+        // OpenWeatherMap API key - הכנס את המפתח שלך כאן
         const apiKey = "64319aab490fe096e4759d3f342c1d2e";
+        const location = "Mazkeret Batya,IL";
         
         // DOM elements
-        const checkButton = document.getElementById('check-weather');
-        const locationInput = document.getElementById('location');
-        const loadingElement = document.querySelector('.loading');
+        const loadingElement = document.getElementById('loading');
         const resultElement = document.getElementById('result');
         const errorElement = document.getElementById('error');
-        
-        // Result elements
-        const locationNameElement = document.getElementById('location-name');
         const dateElement = document.getElementById('date');
         const weatherIconElement = document.getElementById('weather-icon');
         const weatherDescElement = document.getElementById('weather-desc');
@@ -561,40 +584,26 @@
         const topsElement = document.getElementById('tops');
         const bottomsElement = document.getElementById('bottoms');
         const accessoriesElement = document.getElementById('accessories');
+        const footwearElement = document.getElementById('footwear');
         const schoolItemsElement = document.getElementById('school-items');
         const weatherSpecificContainer = document.getElementById('weather-specific-container');
         const weatherSpecificTitle = document.getElementById('weather-specific-title');
         const weatherSpecificItems = document.getElementById('weather-specific-items');
+        const updateTimeElement = document.getElementById('update-time');
         
-        // Add event listener to the check button
-        checkButton.addEventListener('click', handleCheckWeather);
-        
-        // Allow Enter key to trigger the check
-        locationInput.addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                handleCheckWeather();
-            }
+        // Load weather data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            getWeatherForecast();
         });
         
-        function handleCheckWeather() {
-            const location = locationInput.value.trim();
-            
-            if (!location) {
-                alert('אנא הכנס שם של עיר!');
-                return;
-            }
+        function getWeatherForecast() {
+            const baseUrl = "https://api.openweathermap.org/data/2.5/forecast";
+            const url = `${baseUrl}?q=${location}&appid=${apiKey}&units=metric&cnt=8`;
             
             // Show loading, hide results and error
             loadingElement.style.display = 'block';
             resultElement.style.display = 'none';
             errorElement.style.display = 'none';
-            
-            getWeatherForecast(location);
-        }
-        
-        function getWeatherForecast(location) {
-            const baseUrl = "https://api.openweathermap.org/data/2.5/forecast";
-            const url = `${baseUrl}?q=${location}&appid=${apiKey}&units=metric&cnt=8`;
             
             fetch(url)
                 .then(response => {
@@ -605,7 +614,7 @@
                 })
                 .then(data => {
                     const weatherInfo = parseTomorrowWeather(data);
-                    displayResults(location, data.city, weatherInfo);
+                    displayResults(data.city, weatherInfo);
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -688,12 +697,7 @@
             return 'hot';
         }
         
-        function displayResults(locationQuery, cityInfo, weatherInfo) {
-            // Format the location name
-            const locationName = cityInfo.name;
-            const country = cityInfo.country;
-            const displayLocation = country ? `${locationName}, ${country}` : locationName;
-            
+        function displayResults(cityInfo, weatherInfo) {
             // Format the date in Hebrew
             const tomorrow = weatherInfo.tomorrow;
             const dayName = daysHebrew[tomorrow.toLocaleDateString('en-US', { weekday: 'long' })];
@@ -716,7 +720,6 @@
             const weatherSpecific = weatherConditionItems[weatherInfo.condition] || null;
             
             // Update the DOM
-            locationNameElement.textContent = displayLocation;
             dateElement.textContent = formattedDate;
             weatherIconElement.textContent = weatherIcon;
             weatherDescElement.textContent = weatherDesc;
@@ -726,6 +729,7 @@
             updateList(topsElement, clothing.tops);
             updateList(bottomsElement, clothing.bottoms, 'bottom');
             updateList(accessoriesElement, clothing.accessories, 'accessory');
+            updateList(footwearElement, clothing.footwear, 'footwear');
             updateList(schoolItemsElement, clothing.school_items, 'school');
             
             // Update weather-specific items if available
@@ -736,6 +740,14 @@
             } else {
                 weatherSpecificContainer.style.display = 'none';
             }
+            
+            // Update last updated time
+            const now = new Date();
+            const day = now.getDate();
+            const month = monthsHebrew[now.toLocaleDateString('en-US', { month: 'long' })];
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            updateTimeElement.textContent = `עודכן לאחרונה: ${day} ${month}, ${hours}:${minutes}`;
             
             // Hide loading, show results
             loadingElement.style.display = 'none';
