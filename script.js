@@ -519,8 +519,8 @@ function getTimeLabel(hour) {
     }
 }
 
-// פונקציה שמזהה שינויים משמעותיים במזג האוויר
-function detectWeatherChanges(forecasts) {
+// פונקציה שמזהה שינויים משמעותיים במזג האוויר ביחס לממוצע
+function detectWeatherChanges(forecasts, avgTemp) {
     // מסנן רק את התחזיות לשעות בית הספר (8:00-16:00)
     const schoolHoursForecasts = forecasts.filter(forecast => {
         const hour = new Date(forecast.dt * 1000).getHours();
@@ -534,27 +534,22 @@ function detectWeatherChanges(forecasts) {
     
     const changes = [];
     
-    // בדיקת שינויי טמפרטורה משמעותיים
-    for (let i = 1; i < schoolHoursForecasts.length; i++) {
-        const prevForecast = schoolHoursForecasts[i-1];
-        const currentForecast = schoolHoursForecasts[i];
+    // בדיקת שינויי טמפרטורה משמעותיים ביחס לממוצע
+    schoolHoursForecasts.forEach(forecast => {
+        const forecastTemp = forecast.main.temp;
+        const tempDiff = forecastTemp - avgTemp;
+        const forecastHour = new Date(forecast.dt * 1000).getHours();
         
-        const prevTemp = prevForecast.main.temp;
-        const currentTemp = currentForecast.main.temp;
-        const tempDiff = currentTemp - prevTemp;
-        
-        const currentHour = new Date(currentForecast.dt * 1000).getHours();
-        
-        // זיהוי שינוי טמפרטורה משמעותי (מעל 5 מעלות)
+        // זיהוי שינוי טמפרטורה משמעותי (מעל 5 מעלות מהממוצע)
         if (Math.abs(tempDiff) >= 5) {
-            const timeLabel = getTimeLabel(currentHour);
+            const timeLabel = getTimeLabel(forecastHour);
             
             if (tempDiff > 0) {
                 changes.push({
                     type: 'temperature-up',
                     icon: '🌡️',
                     time: timeLabel,
-                    text: `יתחמם משמעותית - עד ${Math.round(currentTemp)}°C`,
+                    text: `יתחמם ל-${Math.round(forecastTemp)}°C (${Math.round(tempDiff)}+ מעלות מהממוצע)`,
                     class: 'change-temperature-up'
                 });
             } else {
@@ -562,18 +557,25 @@ function detectWeatherChanges(forecasts) {
                     type: 'temperature-down',
                     icon: '🌡️',
                     time: timeLabel,
-                    text: `יתקרר משמעותית - עד ${Math.round(currentTemp)}°C`,
+                    text: `יתקרר ל-${Math.round(forecastTemp)}°C (${Math.abs(Math.round(tempDiff))}– מעלות מהממוצע)`,
                     class: 'change-temperature-down'
                 });
             }
         }
+    });
+    
+    // בדיקת שינויי מזג אוויר (גשם, שלג וכו')
+    for (let i = 1; i < schoolHoursForecasts.length; i++) {
+        const prevForecast = schoolHoursForecasts[i-1];
+        const currentForecast = schoolHoursForecasts[i];
         
-        // זיהוי תחילת או סיום גשם
         const prevWeather = prevForecast.weather[0].main;
         const currentWeather = currentForecast.weather[0].main;
+        const currentHour = new Date(currentForecast.dt * 1000).getHours();
         
         const isRainyWeather = weather => ['Rain', 'Drizzle', 'Thunderstorm'].includes(weather);
         
+        // זיהוי תחילת גשם
         if (!isRainyWeather(prevWeather) && isRainyWeather(currentWeather)) {
             changes.push({
                 type: 'rain-start',
@@ -582,7 +584,9 @@ function detectWeatherChanges(forecasts) {
                 text: `צפוי להתחיל גשם בסביבות השעה ${currentHour}:00`,
                 class: 'change-rain-start'
             });
-        } else if (isRainyWeather(prevWeather) && !isRainyWeather(currentWeather)) {
+        } 
+        // זיהוי סיום גשם
+        else if (isRainyWeather(prevWeather) && !isRainyWeather(currentWeather)) {
             changes.push({
                 type: 'rain-end',
                 icon: '🌦️',
@@ -930,41 +934,42 @@ function displayResults(cityInfo, weatherInfo, hourlyForecasts) {
     // הגדרת מחלקת רקע לפי מזג האוויר
     weatherInfoElement.className = 'weather-info.' + weatherInfo.condition.toLowerCase();
     
-    // זיהוי והצגת שינויי מזג אוויר
-    const weatherChanges = detectWeatherChanges(hourlyForecasts);
     
-    if (weatherChanges.length > 0) {
-        // יש שינויים משמעותיים - נציג אותם
-        weatherChangesList.innerHTML = '';
+// זיהוי והצגת שינויי מזג אוויר - נעביר גם את הטמפרטורה הממוצעת
+const weatherChanges = detectWeatherChanges(hourlyForecasts, temp);
+
+if (weatherChanges.length > 0) {
+    // יש שינויים משמעותיים - נציג אותם
+    weatherChangesList.innerHTML = '';
+    
+    weatherChanges.forEach(change => {
+        const listItem = document.createElement('li');
+        listItem.className = 'weather-changes-item';
         
-        weatherChanges.forEach(change => {
-            const listItem = document.createElement('li');
-            listItem.className = 'weather-changes-item';
-            
-            const iconSpan = document.createElement('span');
-            iconSpan.className = 'weather-changes-icon';
-            iconSpan.textContent = change.icon;
-            
-            const timeSpan = document.createElement('span');
-            timeSpan.className = 'weather-changes-time';
-            timeSpan.textContent = change.time + ':';
-            
-            const textSpan = document.createElement('span');
-            textSpan.className = `weather-changes-text ${change.class}`;
-            textSpan.textContent = change.text;
-            
-            listItem.appendChild(iconSpan);
-            listItem.appendChild(timeSpan);
-            listItem.appendChild(textSpan);
-            
-            weatherChangesList.appendChild(listItem);
-        });
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'weather-changes-icon';
+        iconSpan.textContent = change.icon;
         
-        weatherChangesContainer.style.display = 'block';
-    } else {
-        // אין שינויים משמעותיים - נסתיר את האזור
-        weatherChangesContainer.style.display = 'none';
-    }
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'weather-changes-time';
+        timeSpan.textContent = change.time + ':';
+        
+        const textSpan = document.createElement('span');
+        textSpan.className = `weather-changes-text ${change.class}`;
+        textSpan.textContent = change.text;
+        
+        listItem.appendChild(iconSpan);
+        listItem.appendChild(timeSpan);
+        listItem.appendChild(textSpan);
+        
+        weatherChangesList.appendChild(listItem);
+    });
+    
+    weatherChangesContainer.style.display = 'block';
+} else {
+    // אין שינויים משמעותיים - נסתיר את האזור
+    weatherChangesContainer.style.display = 'none';
+}
     
     // Update the DOM for basic weather info
     dateElement.textContent = formattedDate;
