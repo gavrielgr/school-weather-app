@@ -11,7 +11,7 @@ const genderPhrases = {
         'remember': 'זכור'
     },
     'girls': {
-        'recommendationPrefix': 'מומלץ ללבושי',
+        'recommendationPrefix': 'מומלץ ללבוש',
         'takeSomething': 'קחי',
         'takeWater': 'קחי בקבוק מים',
         'takeLotOfWater': 'קחי הרבה מים',
