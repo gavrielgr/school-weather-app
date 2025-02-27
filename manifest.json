@@ -1,20 +1,20 @@
 {
     "name": "מה ללבוש לבית הספר מחר?",
-    "short_name": "מה ללבוש?",
+    "short_name": "מה ללבוש מחר?",
     "description": "אפליקציה לילדים שעוזרת להחליט מה ללבוש לבית הספר מחר לפי מזג האוויר",
-    "start_url": "/",
+    "start_url": "/school-weather-app/",
     "display": "standalone",
     "background_color": "#4D96FF",
     "theme_color": "#4D96FF",
     "icons": [
         {
-            "src": "icons/icon-192x192.png",
+            "src": "/school-weather-app/icons/icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "icons/icon-512x512.png",
+            "src": "/school-weather-app/icons/icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
