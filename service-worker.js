@@ -1,13 +1,13 @@
-const CACHE_NAME = 'school-weather-v2'; // שנה את המספר בכל עדכון
+const CACHE_NAME = 'school-weather-v3'; // שנה את המספר בכל עדכון
 // בשורה זו תוכל לכפות עדכון של קבצים ספציפיים בכל פעם
 const ALWAYS_REFRESH_FILES = ['/index.html'];
 
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/styles.css',
-    '/script.js',
-    '/manifest.json'
+    '/school-weather-app/',
+    '/school-weather-app/index.html',
+    '/school-weather-app/styles.css',
+    '/school-weather-app/script.js',
+    '/school-weather-app/manifest.json'
 ];
 
 // הוסף אירוע התקנה שיכריח מחיקת כל המטמונים הקודמים
