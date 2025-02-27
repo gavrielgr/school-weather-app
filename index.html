@@ -16,8 +16,25 @@
     <link rel="stylesheet" href="/school-weather-app/styles.css">
 </head>
 <body>
-    <button class="theme-toggle" id="theme-toggle">🌓</button>
-    <button class="gender-toggle" id="gender-toggle">👦</button>
+    <button class="floating-button" id="settings-button">⚙️</button>
+
+    <div class="floating-menu" id="floating-menu">
+        <div class="menu-backdrop"></div>
+        <div class="menu-panel">
+            <div class="menu-option">
+                <span>מצב תצוגה</span>
+                <button class="theme-toggle" id="theme-toggle">🌓</button>
+            </div>
+            <div class="menu-option">
+                <span>מגדר</span>
+                <button class="gender-toggle" id="gender-toggle">👦</button>
+            </div>
+            <div class="menu-option">
+                <span>רענן נתונים</span>
+                <button class="refresh-toggle" id="refresh-toggle">🔄</button>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <div class="loading" id="loading">
             <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgc3Ryb2tlPSIjNEQ5NkZGIiBzdHJva2Utd2lkdGg9IjgiIGZpbGw9Im5vbmUiIHN0cm9rZS1kYXNoYXJyYXk9IjI1MSAyNDEiPjxhbmltYXRlVHJhbnNmb3JtIGF0dHJpYnV0ZU5hbWU9InRyYW5zZm9ybSIgdHlwZT0icm90YXRlIiBmcm9tPSIwIDUwIDUwIiB0bz0iMzYwIDUwIDUwIiBkdXI9IjJzIiByZXBlYXRDb3VudD0iaW5kZWZpbml0ZSIvPjwvY2lyY2xlPjwvc3ZnPg==" alt="טוען...">
