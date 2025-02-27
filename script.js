@@ -408,8 +408,8 @@ const cityLocation = "Mazkeret Batya,IL";
 // DOM elements
 let loadingElement, resultElement, errorElement, dateElement, weatherIconElement, 
     weatherDescElement, temperatureElement, weatherInfoElement, weatherReminderElement,
-    weatherChangesContainer, weatherChangesList, weatherSpecificContainer, weatherSpecificTitle,
-    weatherSpecificItems, updateTimeElement, clothingContainer, mainRecommendationElement,
+    weatherChangesContainer, weatherChangesList,
+    updateTimeElement, clothingContainer, mainRecommendationElement,
     dayIndicatorElement, weatherComparisonElement, sunsetTimeElement, weatherTitleElement,
     speakButton, factContentElement, factButton, themeToggle, genderToggle;
 
@@ -426,9 +426,6 @@ function initDOMElements() {
     weatherReminderElement = document.getElementById('weather-reminder');
     weatherChangesContainer = document.getElementById('weather-changes');
     weatherChangesList = document.getElementById('weather-changes-list');
-    weatherSpecificContainer = document.getElementById('weather-specific-container');
-    weatherSpecificTitle = document.getElementById('weather-specific-title');
-    weatherSpecificItems = document.getElementById('weather-specific-items');
     updateTimeElement = document.getElementById('update-time');
     clothingContainer = document.getElementById('clothing-container');
     mainRecommendationElement = document.getElementById('main-recommendation');
@@ -911,9 +908,6 @@ function displayResults(cityInfo, weatherInfo, hourlyForecasts) {
     // Get clothing recommendations based on temperature
     const clothing = JSON.parse(JSON.stringify(clothingRules[tempCategory])); // Deep copy to avoid modifying the original
     
-    // Weather-specific recommendations
-    const weatherSpecific = weatherConditionItems[weatherInfo.condition] || null;
-    
     // Override footwear recommendation based on weather condition
     if (['Rain', 'Thunderstorm', 'Drizzle'].includes(weatherInfo.condition)) {
         clothing.footwear = ['מגפיים - שים/י לב לבדוק שאין שיעור ספורט מחר!'];
@@ -1005,33 +999,7 @@ if (weatherChanges.length > 0) {
     // הצג קטגוריות לבוש כאשר מסננים את הריקות
     displayClothingCategories(clothing);
     
-    // Update weather-specific items if available
-    if (weatherSpecific && weatherSpecific.items.length > 0) {
-        weatherSpecificTitle.textContent = weatherSpecific.title;
-        
-        // Clear existing items
-        weatherSpecificItems.innerHTML = '';
-        
-        // Add new items with appropriate classes
-        weatherSpecific.items.forEach(item => {
-            const li = document.createElement('li');
-            
-            // Add CSS class based on item type
-            for (const [itemText, className] of Object.entries(clothingItemClasses)) {
-                if (item.includes(itemText)) {
-                    li.className = className;
-                    break;
-                }
-            }
-            
-            li.textContent = item;
-            weatherSpecificItems.appendChild(li);
-        });
-        
-        weatherSpecificContainer.style.display = 'block';
-    } else {
-        weatherSpecificContainer.style.display = 'none';
-    }
+
     
     // Update last updated time
     const now = new Date();
