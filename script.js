@@ -411,7 +411,7 @@ let loadingElement, resultElement, errorElement, dateElement, weatherIconElement
     weatherChangesContainer, weatherChangesList, weatherSpecificContainer, weatherSpecificTitle,
     weatherSpecificItems, updateTimeElement, clothingContainer, mainRecommendationElement,
     dayIndicatorElement, weatherComparisonElement, sunsetTimeElement, weatherTitleElement,
-    speakButton, factContentElement, factButton, themeToggle;
+    speakButton, factContentElement, factButton, themeToggle, genderToggle;
 
 // הגדרת כל אלמנטי ה-DOM כשהדף נטען
 function initDOMElements() {
@@ -440,6 +440,8 @@ function initDOMElements() {
     factContentElement = document.getElementById('fact-content');
     factButton = document.getElementById('fact-button');
     themeToggle = document.getElementById('theme-toggle');
+    genderToggle = document.getElementById('gender-toggle');
+
 }
 
 // Gender for clothing recommendations (can be switched by user preference)
@@ -459,6 +461,25 @@ function toggleTheme() {
     }
 }
 
+function toggleGender() {
+    if (selectedGender === 'boys') {
+        selectedGender = 'girls';
+        localStorage.setItem('gender', 'girls');
+        genderToggle.textContent = '👧';
+    } else {
+        selectedGender = 'boys';
+        localStorage.setItem('gender', 'boys');
+        genderToggle.textContent = '👦';
+    }
+    
+    // רענון המלצות הלבוש
+    const tempCategory = getTemperatureCategory(parseFloat(temperatureElement.textContent));
+    const clothing = JSON.parse(JSON.stringify(clothingRules[tempCategory]));
+    
+    // עדכון תצוגת קטגוריות הבגדים
+    displayClothingCategories(clothing);
+}
+
 // Initialize theme from localStorage
 function initTheme() {
     const savedTheme = localStorage.getItem('theme');
@@ -473,6 +494,10 @@ function initGender() {
     const savedGender = localStorage.getItem('gender');
     if (savedGender) {
         selectedGender = savedGender;
+        // עדכון טקסט הכפתור בהתאם למגדר שנשמר
+        if (genderToggle) {
+            genderToggle.textContent = selectedGender === 'boys' ? '👦' : '👧';
+        }
     }
 }
 
@@ -1042,6 +1067,11 @@ document.addEventListener('DOMContentLoaded', function() {
     speakButton.addEventListener('click', function() {
         speakText(mainRecommendationElement.textContent);
     });
+
+    // Add event listener for gender toggle button
+    if (genderToggle) {
+        genderToggle.addEventListener('click', toggleGender);
+    }
     
     // Add event listener for fact button
     factButton.addEventListener('click', showRandomFact);
