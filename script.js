@@ -1,3 +1,27 @@
+// הוספת אובייקט עם גרסאות בלשון זכר ונקבה לכל הטקסטים שצריכים להשתנות
+const genderPhrases = {
+    'boys': {
+        'recommendationPrefix': 'מומלץ ללבוש',
+        'takeSomething': 'קח',
+        'takeWater': 'קח בקבוק מים',
+        'takeLotOfWater': 'קח הרבה מים',
+        'takeUmbrella': 'קח מטריה',
+        'checkSportClass': 'שים לב לבדוק שאין שיעור ספורט מחר',
+        'attention': 'שים לב',
+        'remember': 'זכור'
+    },
+    'girls': {
+        'recommendationPrefix': 'מומלץ ללבושי',
+        'takeSomething': 'קחי',
+        'takeWater': 'קחי בקבוק מים',
+        'takeLotOfWater': 'קחי הרבה מים',
+        'takeUmbrella': 'קחי מטריה',
+        'checkSportClass': 'שימי לב לבדוק שאין שיעור ספורט מחר',
+        'attention': 'שימי לב',
+        'remember': 'זכרי'
+    }
+};
+
 // Weather icons mapping
 const weatherIcons = {
     'Clear': '☀️',
@@ -324,56 +348,56 @@ const weatherConditionItems = {
     }
 };
 
-// Main recommendation texts based on weather conditions and temperature
+// עדכון mainRecommendations לשימוש בטקסטים לפי מגדר
 const mainRecommendations = {
     'Rain': {
-        'cold': 'מומלץ ללבוש בגדים חמים ולקחת מטריה!',
-        'cool': 'מומלץ ללבוש שכבות ולקחת מטריה!',
-        'mild': 'מומלץ ללבוש בגדים עם שרוול ארוך ולקחת מטריה!',
-        'warm': 'מומלץ ללבוש חולצה קצרה ולקחת מטריה!'
+        'cold': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים חמים ול${genderPhrases[gender].takeUmbrella}!`,
+        'cool': (gender) => `${genderPhrases[gender].recommendationPrefix} שכבות ול${genderPhrases[gender].takeUmbrella}!`,
+        'mild': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים עם שרוול ארוך ול${genderPhrases[gender].takeUmbrella}!`,
+        'warm': (gender) => `${genderPhrases[gender].recommendationPrefix} חולצה קצרה ול${genderPhrases[gender].takeUmbrella}!`
     },
     'Thunderstorm': {
-        'cold': 'מומלץ ללבוש בגדים חמים ולקחת מטריה חזקה!',
-        'cool': 'מומלץ ללבוש שכבות ולקחת מטריה חזקה!',
-        'mild': 'מומלץ ללבוש בגדים עם שרוול ארוך ולקחת מטריה חזקה!',
-        'warm': 'מומלץ ללבוש חולצה קצרה ולקחת מטריה חזקה!'
+        'cold': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים חמים ול${genderPhrases[gender].takeSomething} מטריה חזקה!`,
+        'cool': (gender) => `${genderPhrases[gender].recommendationPrefix} שכבות ול${genderPhrases[gender].takeSomething} מטריה חזקה!`,
+        'mild': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים עם שרוול ארוך ול${genderPhrases[gender].takeSomething} מטריה חזקה!`,
+        'warm': (gender) => `${genderPhrases[gender].recommendationPrefix} חולצה קצרה ול${genderPhrases[gender].takeSomething} מטריה חזקה!`
     },
     'Drizzle': {
-        'cold': 'מומלץ ללבוש בגדים חמים ולקחת מטריה קטנה!',
-        'cool': 'מומלץ ללבוש שכבות ולקחת מטריה קטנה!',
-        'mild': 'מומלץ ללבוש בגדים עם שרוול ארוך ולקחת מטריה קטנה!',
-        'warm': 'מומלץ ללבוש חולצה קצרה ולקחת מטריה קטנה!'
+        'cold': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים חמים ול${genderPhrases[gender].takeSomething} מטריה קטנה!`,
+        'cool': (gender) => `${genderPhrases[gender].recommendationPrefix} שכבות ול${genderPhrases[gender].takeSomething} מטריה קטנה!`,
+        'mild': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים עם שרוול ארוך ול${genderPhrases[gender].takeSomething} מטריה קטנה!`,
+        'warm': (gender) => `${genderPhrases[gender].recommendationPrefix} חולצה קצרה ול${genderPhrases[gender].takeSomething} מטריה קטנה!`
     },
     'Snow': {
-        'cold': 'מומלץ ללבוש בגדים חמים במיוחד ומגפיים!',
-        'cool': 'מומלץ ללבוש בגדים חמים במיוחד ומגפיים!'
+        'cold': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים חמים במיוחד ומגפיים!`,
+        'cool': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים חמים במיוחד ומגפיים!`
     },
     'Clear': {
-        'very_cold': 'מומלץ ללבוש בגדים חמים מאוד! יהיה קר מחר.',
-        'cold': 'מומלץ ללבוש בגדים חמים! יהיה קר מחר.',
-        'cool': 'מומלץ ללבוש שכבות! יהיה קריר מחר.',
-        'mild': 'מומלץ ללבוש חולצה קלה עם שרוול!',
-        'warm': 'מומלץ ללבוש חולצה קצרה וקחו בקבוק מים!',
-        'hot': 'מומלץ ללבוש בגדים קלים וקחו הרבה מים!'
+        'very_cold': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים חמים מאוד! יהיה קר מחר.`,
+        'cold': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים חמים! יהיה קר מחר.`,
+        'cool': (gender) => `${genderPhrases[gender].recommendationPrefix} שכבות! יהיה קריר מחר.`,
+        'mild': (gender) => `${genderPhrases[gender].recommendationPrefix} חולצה קלה עם שרוול!`,
+        'warm': (gender) => `${genderPhrases[gender].recommendationPrefix} חולצה קצרה ו${genderPhrases[gender].takeWater}!`,
+        'hot': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים קלים ו${genderPhrases[gender].takeLotOfWater}!`
     },
     'Clouds': {
-        'very_cold': 'מומלץ ללבוש בגדים חמים מאוד! יהיה קר ומעונן.',
-        'cold': 'מומלץ ללבוש בגדים חמים! יהיה קר ומעונן.',
-        'cool': 'מומלץ ללבוש שכבות! יהיה קריר ומעונן.',
-        'mild': 'מומלץ ללבוש חולצה עם שרוול! יהיה מעונן.',
-        'warm': 'מומלץ ללבוש חולצה קצרה! יהיה חם ומעונן.',
-        'hot': 'מומלץ ללבוש בגדים קלים! יהיה חם ומעונן.'
+        'very_cold': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים חמים מאוד! יהיה קר ומעונן.`,
+        'cold': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים חמים! יהיה קר ומעונן.`,
+        'cool': (gender) => `${genderPhrases[gender].recommendationPrefix} שכבות! יהיה קריר ומעונן.`,
+        'mild': (gender) => `${genderPhrases[gender].recommendationPrefix} חולצה עם שרוול! יהיה מעונן.`,
+        'warm': (gender) => `${genderPhrases[gender].recommendationPrefix} חולצה קצרה! יהיה חם ומעונן.`,
+        'hot': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים קלים! יהיה חם ומעונן.`
     }
 };
 
-// Default main recommendations for temperature categories
+// עדכון defaultMainRecommendations 
 const defaultMainRecommendations = {
-    'very_cold': 'מומלץ ללבוש בגדים חמים מאוד!',
-    'cold': 'מומלץ ללבוש בגדים חמים!',
-    'cool': 'מומלץ ללבוש שכבות! יהיה קריר.',
-    'mild': 'מומלץ ללבוש חולצה עם שרוול!',
-    'warm': 'מומלץ ללבוש חולצה קצרה וקחו בקבוק מים!',
-    'hot': 'מומלץ ללבוש בגדים קלים וקחו הרבה מים!'
+    'very_cold': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים חמים מאוד!`,
+    'cold': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים חמים!`,
+    'cool': (gender) => `${genderPhrases[gender].recommendationPrefix} שכבות! יהיה קריר.`,
+    'mild': (gender) => `${genderPhrases[gender].recommendationPrefix} חולצה עם שרוול!`,
+    'warm': (gender) => `${genderPhrases[gender].recommendationPrefix} חולצה קצרה ו${genderPhrases[gender].takeWater}!`,
+    'hot': (gender) => `${genderPhrases[gender].recommendationPrefix} בגדים קלים ו${genderPhrases[gender].takeLotOfWater}!`
 };
 
 // מערך עובדות מעניינות על מזג אוויר ולבוש
@@ -410,7 +434,7 @@ let loadingElement, resultElement, errorElement, dateElement, weatherIconElement
     weatherDescElement, temperatureElement, weatherInfoElement, weatherReminderElement,
     weatherChangesContainer, weatherChangesList,
     updateTimeElement, clothingContainer, mainRecommendationElement,
-    dayIndicatorElement, weatherComparisonElement, sunsetTimeElement, weatherTitleElement,
+    dayIndicatorElement, sunsetTimeElement, weatherTitleElement,
     speakButton, factContentElement, factButton, themeToggle, genderToggle;
 
 // הגדרת כל אלמנטי ה-DOM כשהדף נטען
@@ -430,7 +454,6 @@ function initDOMElements() {
     clothingContainer = document.getElementById('clothing-container');
     mainRecommendationElement = document.getElementById('main-recommendation');
     dayIndicatorElement = document.getElementById('day-indicator');
-    weatherComparisonElement = document.getElementById('weather-comparison');
     sunsetTimeElement = document.getElementById('sunset-time');
     weatherTitleElement = document.getElementById('weather-title');
     speakButton = document.getElementById('speak-button');
@@ -458,6 +481,7 @@ function toggleTheme() {
     }
 }
 
+// עדכון של toggleGender כדי לכלול גם את שינויי הלשון
 function toggleGender() {
     if (selectedGender === 'boys') {
         selectedGender = 'girls';
@@ -473,8 +497,45 @@ function toggleGender() {
     const tempCategory = getTemperatureCategory(parseFloat(temperatureElement.textContent));
     const clothing = JSON.parse(JSON.stringify(clothingRules[tempCategory]));
     
+    // עדכון ההמלצה הראשית
+    const condition = weatherDescElement.textContent;
+    let mainCondition = 'Clear'; // ברירת מחדל
+    
+    // מצא את תנאי מזג האוויר המתאים
+    for (const [englishDesc, hebrewDesc] of Object.entries(weatherTranslations)) {
+        if (hebrewDesc === condition) {
+            mainCondition = englishDesc;
+            break;
+        }
+    }
+    
+    // עדכון המלצה ראשית
+    const mainRecommendation = getMainRecommendation(mainCondition, tempCategory, selectedGender);
+    mainRecommendationElement.textContent = mainRecommendation;
+    
+    // עדכון מלל לפי מגדר
+    updateTextsForGender();
+    
     // עדכון תצוגת קטגוריות הבגדים
     displayClothingCategories(clothing);
+}
+
+// פונקציה חדשה שמעדכנת את כל הטקסטים המגדריים
+function updateTextsForGender() {
+    // עדכון הודעת תזכורת מים
+    if (weatherReminderElement.style.display !== 'none') {
+        weatherReminderElement.innerHTML = `<span style="font-size:1.3rem; margin-left: 10px;">💧</span> ${genderPhrases[selectedGender].remember} לשתות הרבה מים מחר!`;
+    }
+    
+    // עדכון טקסטים מגדריים אחרים באפליקציה
+    // לדוגמה, בהודעות שגיאה, ביום השבוע וכדומה
+    
+    const dayOfWeek = new Date().getDay() + 1; // מחר
+    if (dayOfWeek === 5) { // Friday
+        dayIndicatorElement.textContent = `${genderPhrases[selectedGender].attention}: מחר יום שישי! יום לימודים קצר`;
+    } else if (dayOfWeek === 0) { // Sunday
+        dayIndicatorElement.textContent = `${genderPhrases[selectedGender].attention}: מחר יום ראשון! תחילת שבוע חדש`;
+    }
 }
 
 // Initialize theme from localStorage
@@ -805,18 +866,18 @@ function getTemperatureCategory(temp) {
     return 'hot';
 }
 
-// פונקציה שמחזירה המלצה מרכזית מתאימה
-function getMainRecommendation(condition, tempCategory) {
+// עדכון פונקציית getMainRecommendation
+function getMainRecommendation(condition, tempCategory, gender) {
     // בדיקה אם יש המלצה ספציפית למזג האוויר והטמפרטורה
     if (mainRecommendations[condition] && mainRecommendations[condition][tempCategory]) {
-        return mainRecommendations[condition][tempCategory];
+        return mainRecommendations[condition][tempCategory](gender);
     }
     
     // אם לא, נחזיר המלצה כללית לפי טמפרטורה
-    return defaultMainRecommendations[tempCategory];
+    return defaultMainRecommendations[tempCategory](gender);
 }
 
-// פונקציה להצגת הקטגוריות הלא ריקות
+// עדכון פונקציית displayClothingCategories כדי לטפל בכפילויות פריטי לבוש
 function displayClothingCategories(clothing) {
     const categories = [
         { name: 'חלק עליון', items: clothing.tops, id: 'tops' },
@@ -847,7 +908,27 @@ function displayClothingCategories(clothing) {
                 // השתמש בקטגוריה המגדרית הנבחרת
                 const genderItems = category.items[selectedGender] || [];
                 
-                genderItems.forEach(item => {
+                // מסנן פריטים כפולים לבנות - עדיפות לחצאית על מכנסיים בסגנון דומה
+                let filteredItems = genderItems;
+                if (selectedGender === 'girls') {
+                    // קבע אילו פריטים להציג
+                    const hasSkirt = genderItems.some(item => item.includes('חצאית'));
+                    
+                    if (hasSkirt) {
+                        // אם יש חצאית, לא מציג מכנסיים רגילים אבל כן מציג מכנסיים קצרים או מיוחדים
+                        filteredItems = genderItems.filter(item => {
+                            // שמור חצאית תמיד
+                            if (item.includes('חצאית')) return true;
+                            // שמור מכנסיים קצרים תמיד
+                            if (item.includes('מכנסיים קצרים')) return true;
+                            // סנן מכנסיים רגילים אם יש חצאית
+                            if (item.includes('מכנסיים ארוכים') && !item.includes('מיוחדים')) return false;
+                            return true;
+                        });
+                    }
+                }
+                
+                filteredItems.forEach(item => {
                     const li = document.createElement('li');
                     
                     // הוסף מחלקת CSS לפי סוג הפריט
@@ -924,8 +1005,8 @@ function displayResults(cityInfo, weatherInfo, hourlyForecasts) {
         weatherReminderElement.style.display = 'none';
     }
     
-    // Set main recommendation
-    const mainRecommendation = getMainRecommendation(weatherInfo.condition, tempCategory);
+    // Set main recommendation - להעביר את המגדר הנבחר
+    const mainRecommendation = getMainRecommendation(weatherInfo.condition, tempCategory, selectedGender);
     mainRecommendationElement.textContent = mainRecommendation;
     
     // Set the day indicator for Friday or Sunday
@@ -938,13 +1019,6 @@ function displayResults(cityInfo, weatherInfo, hourlyForecasts) {
         dayIndicatorElement.className = 'day-indicator visible';
     } else {
         dayIndicatorElement.className = 'day-indicator';
-    }
-    
-    // Set weather comparison
-    if (weatherInfo.todayTemp) {
-        weatherComparisonElement.textContent = compareTemperatures(temp, weatherInfo.todayTemp);
-    } else {
-        weatherComparisonElement.style.display = 'none';
     }
     
     // Set sunset time
