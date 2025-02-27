@@ -464,10 +464,62 @@ function initDOMElements() {
 
 }
 
+// פונקציה לאתחול התפריט הצף
+function initFloatingMenu() {
+    // הגדר את כפתור ההגדרות
+    const settingsButton = document.getElementById('settings-button');
+    const floatingMenu = document.getElementById('floating-menu');
+    const menuBackdrop = document.querySelector('.menu-backdrop');
+    const refreshToggle = document.getElementById('refresh-toggle');
+    
+    // הוסף מאזין לחיצה לכפתור ההגדרות
+    if (settingsButton) {
+        settingsButton.addEventListener('click', function() {
+            floatingMenu.classList.add('open');
+        });
+    }
+    
+    // הוסף מאזין לחיצה לרקע להסתרת התפריט
+    if (menuBackdrop) {
+        menuBackdrop.addEventListener('click', function() {
+            floatingMenu.classList.remove('open');
+        });
+    }
+    
+    // הוסף מאזין לחיצה לכפתור רענון
+    if (refreshToggle) {
+        refreshToggle.addEventListener('click', function() {
+            // סגור את התפריט
+            floatingMenu.classList.remove('open');
+            // רענן את התוכן
+            window.location.reload();
+        });
+    }
+    
+    // עדכן את מצב האייקון לפי המצב השמור
+    updateMenuIcons();
+}
+
+// פונקציה לעדכון האייקונים בתפריט לפי המצב הנוכחי
+function updateMenuIcons() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const genderToggle = document.getElementById('gender-toggle');
+    
+    // עדכן את אייקון התצוגה
+    if (themeToggle) {
+        themeToggle.textContent = document.body.getAttribute('data-theme') === 'dark' ? '☀️' : '🌓';
+    }
+    
+    // עדכן את אייקון המגדר
+    if (genderToggle) {
+        genderToggle.textContent = selectedGender === 'boys' ? '👦' : '👧';
+    }
+}
+
 // Gender for clothing recommendations (can be switched by user preference)
 let selectedGender = 'boys'; // Default to boys
 
-// Function to toggle dark/light theme
+// עדכון פונקציית toggleTheme לסגור את התפריט
 function toggleTheme() {
     const body = document.body;
     if (body.getAttribute('data-theme') === 'dark') {
@@ -479,6 +531,9 @@ function toggleTheme() {
         localStorage.setItem('theme', 'dark');
         themeToggle.textContent = '☀️';
     }
+    
+    // סגור את התפריט אחרי הפעולה
+    document.getElementById('floating-menu').classList.remove('open');
 }
 
 // עדכון של toggleGender כדי לכלול גם את שינויי הלשון
@@ -492,7 +547,10 @@ function toggleGender() {
         localStorage.setItem('gender', 'boys');
         genderToggle.textContent = '👦';
     }
-    
+
+    // סגור את התפריט אחרי הפעולה
+    document.getElementById('floating-menu').classList.remove('open');
+  
     // רענון המלצות הלבוש
     const tempCategory = getTemperatureCategory(parseFloat(temperatureElement.textContent));
     const clothing = JSON.parse(JSON.stringify(clothingRules[tempCategory]));
