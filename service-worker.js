@@ -1,4 +1,4 @@
-const CACHE_NAME = 'school-weather-v3'; // שנה את המספר בכל עדכון
+const CACHE_NAME = 'school-weather-v4'; // שנה את המספר בכל עדכון
 // בשורה זו תוכל לכפות עדכון של קבצים ספציפיים בכל פעם
 const ALWAYS_REFRESH_FILES = ['/index.html'];
 
