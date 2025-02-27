@@ -461,7 +461,8 @@ function initDOMElements() {
     factButton = document.getElementById('fact-button');
     themeToggle = document.getElementById('theme-toggle');
     genderToggle = document.getElementById('gender-toggle');
-
+      // הוסף אתחול של התפריט הצף
+    initFloatingMenu();
 }
 
 // פונקציה לאתחול התפריט הצף
@@ -1171,7 +1172,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initGender();
     
     // Add event listener for theme toggle button
-    themeToggle.addEventListener('click', toggleTheme);
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
     
     // Add event listener for speak button
     speakButton.addEventListener('click', function() {
