@@ -1093,6 +1093,16 @@ if (weatherChanges.length > 0) {
 
 // The main initialization function that runs when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+
+    // האזנה להודעות מה-Service Worker לרענון האפליקציה
+    navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data.type === 'REFRESH_APP') {
+            console.log('התקבלה הודעת רענון מגרסה חדשה:', event.data.version);
+            alert('גרסה חדשה של האפליקציה זמינה! האפליקציה תתרענן כעת.');
+            window.location.reload(true);
+        }
+    });
+    
     // Initialize DOM elements
     initDOMElements();
     
