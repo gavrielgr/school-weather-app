@@ -212,6 +212,7 @@ body {
 .weather-date {
     font-size: 1.3rem;
     margin-bottom: 15px;
+    text-align: center; /* הוספת יישור לאמצע */
 }
 
 .weather-details {
