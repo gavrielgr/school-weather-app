@@ -10,40 +10,149 @@
     --footer-bg: #f8f9fa;
 }
 
-/* Gender toggle button */
-.gender-toggle {
+/* סגנון לכפתור הצף */
+.floating-button {
     position: fixed;
-    top: 20px;
-    left: 80px; /* מיקום אחרי כפתור מצב חשוך */
-    background-color: var(--secondary);
+    bottom: 20px;
+    left: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--primary);
     color: white;
     border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    font-size: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    z-index: 1001;
     cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 1000;
-    transition: all 0.3s;
+    transition: transform 0.3s;
 }
 
-.gender-toggle:hover {
+.floating-button:hover, .floating-button:focus {
     transform: scale(1.1);
 }
 
-@media (max-width: 600px) {
-    .gender-toggle {
-        width: 40px;
-        height: 40px;
-        font-size: 1.2rem;
-        top: 10px;
-        left: 60px;
+/* סגנון לחלונית התפריט */
+.floating-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+    z-index: 1000;
+}
+
+.floating-menu.open {
+    display: block;
+}
+
+/* רקע כהה */
+.menu-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+}
+
+/* פאנל התפריט */
+.menu-panel {
+    position: absolute;
+    bottom: 90px;
+    left: 20px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    width: 200px;
+    padding: 15px;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
     }
 }
+
+/* סגנון לאפשרויות בתפריט */
+.menu-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.menu-option:last-child {
+    border-bottom: none;
+}
+
+/* סגנון לכפתורים בתפריט */
+.theme-toggle, .gender-toggle, .refresh-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    position: static;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.theme-toggle:hover, .gender-toggle:hover, .refresh-toggle:hover {
+    transform: scale(1.1);
+}
+
+.theme-toggle {
+    background-color: var(--primary);
+    color: white;
+}
+
+.gender-toggle {
+    background-color: var(--secondary);
+    color: white;
+}
+
+.refresh-toggle {
+    background-color: var(--success);
+    color: white;
+}
+
+/* תמיכה בדארק מוד */
+[data-theme="dark"] .menu-panel {
+    background-color: var(--card-bg);
+    color: var(--text);
+}
+
+[data-theme="dark"] .menu-option {
+    border-bottom-color: #333;
+}
+
+/* התאמת מדיה למכשירים קטנים */
+@media (max-width: 600px) {
+    .menu-panel {
+        width: 180px;
+    }
+    
+    .floating-button {
+        width: 50px;
+        height: 50px;
+    }
+}
+
 
 [data-theme="dark"] {
     --primary: #375C99;
@@ -651,31 +760,6 @@ footer {
     color: #aaa;
 }
 
-/* Theme toggle button */
-.theme-toggle {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 1000;
-    transition: all 0.3s;
-}
-
-.theme-toggle:hover {
-    transform: rotate(30deg);
-}
-
 @media (max-width: 600px) {
     body {
         font-size: 16px;
@@ -728,13 +812,5 @@ footer {
     
     .weather-changes-time {
         min-width: 70px;
-    }
-    
-    .theme-toggle {
-        width: 40px;
-        height: 40px;
-        font-size: 1.2rem;
-        top: 10px;
-        left: 10px;
     }
 }
