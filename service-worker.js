@@ -1,4 +1,7 @@
-const CACHE_NAME = 'school-weather-v1';
+const CACHE_NAME = 'school-weather-v2'; // שנה את המספר בכל עדכון
+// בשורה זו תוכל לכפות עדכון של קבצים ספציפיים בכל פעם
+const ALWAYS_REFRESH_FILES = ['/index.html'];
+
 const urlsToCache = [
     '/',
     '/index.html',
@@ -7,7 +10,10 @@ const urlsToCache = [
     '/manifest.json'
 ];
 
+// הוסף אירוע התקנה שיכריח מחיקת כל המטמונים הקודמים
 self.addEventListener('install', event => {
+    self.skipWaiting(); // גורם לשירות עובד החדש להיכנס לפעולה מיד
+    
     event.waitUntil(
         caches.open(CACHE_NAME)
         .then(cache => {
@@ -20,6 +26,7 @@ self.addEventListener('install', event => {
     );
 });
 
+
 self.addEventListener('fetch', event => {
     // בדיקה שזו בקשה שנוכל לטפל בה
     if (!shouldHandleRequest(event.request)) {
@@ -27,46 +34,62 @@ self.addEventListener('fetch', event => {
     }
 
     event.respondWith(
-        caches.match(event.request)
-        .then(response => {
-            // החזר את התשובה מהמטמון אם היא קיימת
-            if (response) {
-                return response;
-            }
-            
-            // אחרת, הבא את הבקשה מהרשת
-            return fetch(event.request)
+        // בדיקה אם הקובץ נמצא ברשימת "תמיד לרענן"
+        ALWAYS_REFRESH_FILES.some(file => event.request.url.endsWith(file))
+        ? 
+        // אם כן - קודם מנסים מהרשת ואז מהמטמון
+        fetch(event.request)
             .then(response => {
-                // בדיקה שהתשובה תקינה ושהבקשה שאנחנו יכולים לשמור במטמון
-                if (!response || response.status !== 200 || response.type !== 'basic' || 
-                    event.request.url.includes('api.openweathermap.org')) {
+                // אם הבקשה הצליחה, נשמור במטמון ונחזיר
+                const responseToCache = response.clone();
+                caches.open(CACHE_NAME).then(cache => {
+                    cache.put(event.request, responseToCache);
+                });
+                return response;
+            })
+            .catch(() => {
+                // אם נכשל, ננסה מהמטמון
+                return caches.match(event.request);
+            })
+        :
+        // אחרת - קודם מהמטמון ואז מהרשת (הקוד המקורי שלך)
+        caches.match(event.request)
+            .then(response => {
+                // החזר את התשובה מהמטמון אם היא קיימת
+                if (response) {
                     return response;
                 }
                 
-                // שכפל את התשובה כי אפשר להשתמש בזרם תשובות רק פעם אחת
-                const responseToCache = response.clone();
-                
-                // שמור את התשובה במטמון - רק אם סוג הבקשה מתאים
-                if (shouldCacheRequest(event.request)) {
-                    caches.open(CACHE_NAME)
-                    .then(cache => {
-                        try {
-                            cache.put(event.request, responseToCache);
-                        } catch (error) {
-                            console.error('שגיאה בשמירת בקשה במטמון:', error);
-                        }
-                    });
-                }
-                
-                return response;
-            });
-        })
-        .catch(error => {
-            console.error('שגיאה בעת אחזור משאב:', error);
-            // אפשר להחזיר כאן תשובת גיבוי למקרה של שגיאה
-        })
+                // אחרת, הבא את הבקשה מהרשת
+                return fetch(event.request)
+                .then(response => {
+                    // בדיקה שהתשובה תקינה ושהבקשה שאנחנו יכולים לשמור במטמון
+                    if (!response || response.status !== 200 || response.type !== 'basic' || 
+                        event.request.url.includes('api.openweathermap.org')) {
+                        return response;
+                    }
+                    
+                    // שכפל את התשובה כי אפשר להשתמש בזרם תשובות רק פעם אחת
+                    const responseToCache = response.clone();
+                    
+                    // שמור את התשובה במטמון - רק אם סוג הבקשה מתאים
+                    if (shouldCacheRequest(event.request)) {
+                        caches.open(CACHE_NAME)
+                        .then(cache => {
+                            try {
+                                cache.put(event.request, responseToCache);
+                            } catch (error) {
+                                console.error('שגיאה בשמירת בקשה במטמון:', error);
+                            }
+                        });
+                    }
+                    
+                    return response;
+                });
+            })
     );
 });
+
 
 // פונקציה שבודקת אם צריך לטפל בבקשה
 function shouldHandleRequest(request) {
@@ -104,16 +127,27 @@ function shouldCacheRequest(request) {
 }
 
 self.addEventListener('activate', event => {
-    const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
+        // מחיקת כל המטמונים הישנים
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
-                    if (cacheWhitelist.indexOf(cacheName) === -1) {
+                    if (cacheName !== CACHE_NAME) {
+                        console.log('מוחק מטמון ישן:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
             );
+        }).then(() => {
+            // הודע לכל החלונות הפתוחים לרענן
+            return self.clients.matchAll().then(clients => {
+                return Promise.all(clients.map(client => {
+                    return client.postMessage({
+                        type: 'REFRESH_APP',
+                        version: CACHE_NAME
+                    });
+                }));
+            });
         })
     );
 });
