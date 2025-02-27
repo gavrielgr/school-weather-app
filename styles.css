@@ -427,19 +427,6 @@ body {
 .item-pencil::before { content: "✏️"; }
 .item-food::before { content: "🥪"; }
 
-.weather-specific {
-    background-color: #ffefef;
-    border-top-color: var(--secondary);
-}
-
-[data-theme="dark"] .weather-specific {
-    background-color: #3d2929;
-}
-
-.weather-specific h3 {
-    color: var(--secondary);
-    border-bottom-color: var(--secondary);
-}
 
 .weather-changes {
     margin: 0 0 20px 0;
