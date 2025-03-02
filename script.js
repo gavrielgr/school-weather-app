@@ -523,6 +523,8 @@ function addNotificationButton() {
     notificationOption.appendChild(notificationButton);
     menuPanel.appendChild(notificationOption);
 }
+
+
     notificationButton.addEventListener('click', function() {
     // Close menu first
     document.getElementById('floating-menu').classList.remove('open');
