@@ -1263,13 +1263,22 @@ if (weatherChanges.length > 0) {
 
 // The main initialization function that runs when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // אחסן את האינדיקציה שכבר הוצגה הודעת רענון בסשן הנוכחי
+    let refreshMessageShown = sessionStorage.getItem('refreshMessageShown') === 'true';
 
     // האזנה להודעות מה-Service Worker לרענון האפליקציה
     navigator.serviceWorker.addEventListener('message', event => {
-        if (event.data.type === 'REFRESH_APP') {
+        if (event.data.type === 'REFRESH_APP' && !refreshMessageShown) {
             console.log('התקבלה הודעת רענון מגרסה חדשה:', event.data.version);
-            alert('גרסה חדשה של האפליקציה זמינה! האפליקציה תתרענן כעת.');
-            window.location.reload(true);
+            
+            // סמן שהודעת הרענון הוצגה כבר בסשן הנוכחי
+            sessionStorage.setItem('refreshMessageShown', 'true');
+            refreshMessageShown = true;
+            
+            // הצג הודעה ורענן את האפליקציה
+            if (confirm('גרסה חדשה של האפליקציה זמינה! האם תרצה לרענן כעת?')) {
+                window.location.reload(true);
+            }
         }
     });
     
