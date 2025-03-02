@@ -1,7 +1,7 @@
 // Import OneSignal
 importScripts('https://cdn.onesignal.com/sdks/OneSignalSDKWorker.js');
 
-const CACHE_NAME = 'school-weather-v4'; // שנה את המספר בכל עדכון
+const CACHE_NAME = 'school-weather-v5'; // שנה את המספר בכל עדכון
 // בשורה זו תוכל לכפות עדכון של קבצים ספציפיים בכל פעם
 const ALWAYS_REFRESH_FILES = ['/index.html'];
 
