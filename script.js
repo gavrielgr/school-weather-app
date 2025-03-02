@@ -522,48 +522,48 @@ function addNotificationButton() {
     notificationOption.appendChild(notificationSpan);
     notificationOption.appendChild(notificationButton);
     menuPanel.appendChild(notificationOption);
-}
+
 
 
     notificationButton.addEventListener('click', function() {
-    // Close menu first
-    document.getElementById('floating-menu').classList.remove('open');
-    
-    // Get current icon to determine state
-    const currentlyEnabled = notificationButton.textContent === '🔔';
-    
-    if (!currentlyEnabled) {
-        // Request permissions
-        OneSignal.push(function() {
-            console.log("Requesting notification permission");
-            if (typeof OneSignal.showNativePrompt === 'function') {
-                OneSignal.showNativePrompt();
-            } else if (typeof OneSignal.registerForPushNotifications === 'function') {
-                OneSignal.registerForPushNotifications();
-            } else {
-                // Fallback to browser API
-                Notification.requestPermission();
-            }
-            
-            // Check status after a delay
-            setTimeout(function() {
-                updateButtonState(notificationButton);
-            }, 3000);
-        });
-    } else {
-        // Unsubscribe logic
-        OneSignal.push(function() {
-            if (typeof OneSignal.setSubscription === 'function') {
-                OneSignal.setSubscription(false).then(function() {
-                    notificationButton.textContent = '🔕';
-                    notificationButton.style.backgroundColor = '#888';
-                    console.log("Unsubscribed from notifications");
-                });
-            }
-        });
-    }
-});
-
+        // Close menu first
+        document.getElementById('floating-menu').classList.remove('open');
+        
+        // Get current icon to determine state
+        const currentlyEnabled = notificationButton.textContent === '🔔';
+        
+        if (!currentlyEnabled) {
+            // Request permissions
+            OneSignal.push(function() {
+                console.log("Requesting notification permission");
+                if (typeof OneSignal.showNativePrompt === 'function') {
+                    OneSignal.showNativePrompt();
+                } else if (typeof OneSignal.registerForPushNotifications === 'function') {
+                    OneSignal.registerForPushNotifications();
+                } else {
+                    // Fallback to browser API
+                    Notification.requestPermission();
+                }
+                
+                // Check status after a delay
+                setTimeout(function() {
+                    updateButtonState(notificationButton);
+                }, 3000);
+            });
+        } else {
+            // Unsubscribe logic
+            OneSignal.push(function() {
+                if (typeof OneSignal.setSubscription === 'function') {
+                    OneSignal.setSubscription(false).then(function() {
+                        notificationButton.textContent = '🔕';
+                        notificationButton.style.backgroundColor = '#888';
+                        console.log("Unsubscribed from notifications");
+                    });
+                }
+            });
+        }
+    });
+}
 // פונקציה לאתחול התפריט הצף
 function initFloatingMenu() {
     // הגדר את כפתור ההגדרות
