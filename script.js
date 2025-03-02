@@ -465,6 +465,72 @@ function initDOMElements() {
     initFloatingMenu();
 }
 
+// פונקציה להוספת כפתור הרשמה להתראות
+function addNotificationButton() {
+    // בדוק אם OneSignal זמין
+    if (typeof OneSignal === 'undefined') {
+        console.log('OneSignal לא נטען עדיין');
+        return;
+    }
+
+    // בדוק אם יש תמיכה בהתראות
+    if (!('Notification' in window)) {
+        console.log('דפדפן זה לא תומך בהתראות');
+        return;
+    }
+
+    // בדוק אם כבר נרשם להתראות
+    OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+        // הוסף אופציה לתפריט
+        const menuPanel = document.querySelector('.menu-panel');
+        if (menuPanel) {
+            const notificationOption = document.createElement('div');
+            notificationOption.className = 'menu-option';
+            
+            const notificationSpan = document.createElement('span');
+            notificationSpan.textContent = 'התראות ערב';
+            
+            const notificationButton = document.createElement('button');
+            notificationButton.className = 'notification-toggle';
+            notificationButton.id = 'notification-toggle';
+            notificationButton.textContent = isEnabled ? '🔔' : '🔕';
+            notificationButton.style.backgroundColor = isEnabled ? 'var(--success)' : '#888';
+            notificationButton.style.color = 'white';
+            
+            notificationOption.appendChild(notificationSpan);
+            notificationOption.appendChild(notificationButton);
+            menuPanel.appendChild(notificationOption);
+            
+            // הוסף מאזין לכפתור
+            notificationButton.addEventListener('click', function() {
+                // אם עדיין לא נרשם, הצג חלון הרשמה
+                if (!isEnabled) {
+                    OneSignal.showNativePrompt();
+                    
+                    // עדכן את הממשק אחרי שנייה (זמן לחלון אישור)
+                    setTimeout(function() {
+                        OneSignal.isPushNotificationsEnabled(function(newIsEnabled) {
+                            notificationButton.textContent = newIsEnabled ? '🔔' : '🔕';
+                            notificationButton.style.backgroundColor = newIsEnabled ? 'var(--success)' : '#888';
+                            isEnabled = newIsEnabled;
+                        });
+                    }, 3000);
+                } else {
+                    // אם כבר נרשם, הצג אפשרות לביטול רישום
+                    OneSignal.setSubscription(false);
+                    notificationButton.textContent = '🔕';
+                    notificationButton.style.backgroundColor = '#888';
+                    isEnabled = false;
+                }
+                
+                // סגור את התפריט
+                document.getElementById('floating-menu').classList.remove('open');
+            });
+        }
+    });
+}
+
+
 // פונקציה לאתחול התפריט הצף
 function initFloatingMenu() {
     // הגדר את כפתור ההגדרות
@@ -499,6 +565,10 @@ function initFloatingMenu() {
     
     // עדכן את מצב האייקון לפי המצב השמור
     updateMenuIcons();
+    
+    // הוסף כפתור התראות
+    addNotificationButton();
+
 }
 
 // פונקציה לעדכון האייקונים בתפריט לפי המצב הנוכחי
