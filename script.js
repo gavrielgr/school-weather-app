@@ -523,53 +523,44 @@ function addNotificationButton() {
     notificationOption.appendChild(notificationButton);
     menuPanel.appendChild(notificationOption);
     
-    // הוסף מאזין לכפתור
     notificationButton.addEventListener('click', function() {
-        // סגור את התפריט
-        document.getElementById('floating-menu').classList.remove('open');
-        
-        // הפעל בקשת התראות
+    // Close menu first
+    document.getElementById('floating-menu').classList.remove('open');
+    
+    // Get current icon to determine state
+    const currentlyEnabled = notificationButton.textContent === '🔔';
+    
+    if (!currentlyEnabled) {
+        // Request permissions
         OneSignal.push(function() {
-            // גרסה 5.0+
+            console.log("Requesting notification permission");
             if (typeof OneSignal.showNativePrompt === 'function') {
                 OneSignal.showNativePrompt();
-            } 
-            // גרסה 6.0+
-            else if (typeof OneSignal.Notifications !== 'undefined' && 
-                     typeof OneSignal.Notifications.requestPermission === 'function') {
-                OneSignal.Notifications.requestPermission();
-            }
-            // גרסה מאוד ישנה
-            else if (typeof OneSignal.registerForPushNotifications === 'function') {
+            } else if (typeof OneSignal.registerForPushNotifications === 'function') {
                 OneSignal.registerForPushNotifications();
+            } else {
+                // Fallback to browser API
+                Notification.requestPermission();
             }
             
-            // אחרי 3 שניות, נסה לבדוק שוב את המצב
+            // Check status after a delay
             setTimeout(function() {
-                OneSignal.push(function() {
-                    // בדיקה בכל הדרכים האפשריות
-                    if (typeof OneSignal.getNotificationPermission === 'function') {
-                        OneSignal.getNotificationPermission().then(function(permission) {
-                            const isEnabled = permission === 'granted';
-                            notificationButton.textContent = isEnabled ? '🔔' : '🔕';
-                            notificationButton.style.backgroundColor = isEnabled ? 'var(--success)' : '#888';
-                        });
-                    } else if (typeof OneSignal.Notifications !== 'undefined' && 
-                              typeof OneSignal.Notifications.permission !== 'undefined') {
-                        const isEnabled = OneSignal.Notifications.permission;
-                        notificationButton.textContent = isEnabled ? '🔔' : '🔕';
-                        notificationButton.style.backgroundColor = isEnabled ? 'var(--success)' : '#888';
-                    } else if (typeof OneSignal.isPushNotificationsEnabled === 'function') {
-                        OneSignal.isPushNotificationsEnabled(function(isEnabled) {
-                            notificationButton.textContent = isEnabled ? '🔔' : '🔕';
-                            notificationButton.style.backgroundColor = isEnabled ? 'var(--success)' : '#888';
-                        });
-                    }
-                });
+                updateButtonState(notificationButton);
             }, 3000);
         });
-    });
-}
+    } else {
+        // Unsubscribe logic
+        OneSignal.push(function() {
+            if (typeof OneSignal.setSubscription === 'function') {
+                OneSignal.setSubscription(false).then(function() {
+                    notificationButton.textContent = '🔕';
+                    notificationButton.style.backgroundColor = '#888';
+                    console.log("Unsubscribed from notifications");
+                });
+            }
+        });
+    }
+});
 
 
 // פונקציה לאתחול התפריט הצף
@@ -1133,6 +1124,44 @@ function displayClothingCategories(clothing) {
             section.appendChild(heading);
             section.appendChild(list);
             clothingContainer.appendChild(section);
+        }
+    });
+}
+
+// For checking the current permission state
+function updateButtonState(notificationButton) {
+    // Use OneSignal's permission checking in a more robust way
+    OneSignal.push(function() {
+        // First try modern API
+        if (window.Notification && Notification.permission === 'granted') {
+            notificationButton.textContent = '🔔';
+            notificationButton.style.backgroundColor = 'var(--success)';
+            console.log("Permission is granted according to browser");
+            return;
+        }
+        
+        // Then try OneSignal's methods
+        try {
+            if (typeof OneSignal.getNotificationPermission === 'function') {
+                OneSignal.getNotificationPermission().then(function(permission) {
+                    console.log("OneSignal permission status:", permission);
+                    if (permission === 'granted') {
+                        notificationButton.textContent = '🔔';
+                        notificationButton.style.backgroundColor = 'var(--success)';
+                    } else {
+                        notificationButton.textContent = '🔕';
+                        notificationButton.style.backgroundColor = '#888';
+                    }
+                });
+            } else {
+                // Check browser's permission directly as fallback
+                console.log("Using browser permission fallback");
+                const isGranted = window.Notification && Notification.permission === 'granted';
+                notificationButton.textContent = isGranted ? '🔔' : '🔕';
+                notificationButton.style.backgroundColor = isGranted ? 'var(--success)' : '#888';
+            }
+        } catch (error) {
+            console.error("Error checking notification permission:", error);
         }
     });
 }
