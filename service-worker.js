@@ -1,10 +1,10 @@
-
-const CACHE_NAME = 'school-weather-v5'; // שנה את המספר בכל עדכון
-// בשורה זו תוכל לכפות עדכון של קבצים ספציפיים בכל פעם
-const ALWAYS_REFRESH_FILES = ['/index.html'];
-
 // Import OneSignal
 importScripts('https://cdn.onesignal.com/sdks/OneSignalSDKWorker.js');
+
+const CACHE_NAME = 'school-weather-v5'; // שנה את המספר בכל עדכון
+const APP_VERSION = '1.0.0'; // גרסת האפליקציה הנוכחית - עדכן רק כשיש שינוי אמיתי
+// בשורה זו תוכל לכפות עדכון של קבצים ספציפיים בכל פעם
+const ALWAYS_REFRESH_FILES = ['/index.html'];
 
 const urlsToCache = [
     '/school-weather-app/',
@@ -132,26 +132,44 @@ function shouldCacheRequest(request) {
 
 self.addEventListener('activate', event => {
     event.waitUntil(
-        // מחיקת כל המטמונים הישנים
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('מוחק מטמון ישן:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        }).then(() => {
-            // הודע לכל החלונות הפתוחים לרענן
-            return self.clients.matchAll().then(clients => {
-                return Promise.all(clients.map(client => {
-                    return client.postMessage({
-                        type: 'REFRESH_APP',
-                        version: CACHE_NAME
-                    });
-                }));
+        // בדיקת הגרסה האחרונה שהייתה בשימוש
+        caches.open('version-info').then(versionCache => {
+            return versionCache.match('app-version')
+                .then(response => response ? response.text() : null)
+                .then(lastVersion => {
+                    // בדיקה אם יש שינוי בגרסה
+                    const isNewVersion = lastVersion !== APP_VERSION;
+                    
+                    // שמירת הגרסה הנוכחית
+                    return versionCache.put('app-version', new Response(APP_VERSION))
+                        .then(() => isNewVersion);
+                });
+        })
+        .then(isNewVersion => {
+            // מחיקת כל המטמונים הישנים
+            return caches.keys().then(cacheNames => {
+                return Promise.all(
+                    cacheNames.map(cacheName => {
+                        if (cacheName !== CACHE_NAME && cacheName !== 'version-info') {
+                            console.log('מוחק מטמון ישן:', cacheName);
+                            return caches.delete(cacheName);
+                        }
+                    })
+                ).then(() => isNewVersion);
             });
+        })
+        .then(isNewVersion => {
+            // הודע לכל החלונות הפתוחים לרענן רק אם יש גרסה חדשה
+            if (isNewVersion) {
+                return self.clients.matchAll().then(clients => {
+                    return Promise.all(clients.map(client => {
+                        return client.postMessage({
+                            type: 'REFRESH_APP',
+                            version: APP_VERSION
+                        });
+                    }));
+                });
+            }
         })
     );
 });
