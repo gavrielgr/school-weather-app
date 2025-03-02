@@ -2,7 +2,7 @@
 importScripts('https://cdn.onesignal.com/sdks/OneSignalSDKWorker.js');
 
 const CACHE_NAME = 'school-weather-v6'; // שנה את המספר בכל עדכון
-const APP_VERSION = '1.0.0'; // גרסת האפליקציה הנוכחית - עדכן רק כשיש שינוי אמיתי
+const APP_VERSION = '1.0.1'; // גרסת האפליקציה הנוכחית - עדכן רק כשיש שינוי אמיתי
 // בשורה זו תוכל לכפות עדכון של קבצים ספציפיים בכל פעם
 const ALWAYS_REFRESH_FILES = ['/index.html'];
 
