@@ -465,68 +465,110 @@ function initDOMElements() {
     initFloatingMenu();
 }
 
-async function addNotificationButton() {
+// פונקציה להוספת כפתור הרשמה להתראות - גישה אוניברסלית
+function addNotificationButton() {
+    // בדוק אם OneSignal זמין
     if (typeof OneSignal === 'undefined') {
         console.log('OneSignal לא נטען עדיין');
+        setTimeout(addNotificationButton, 1000); // נסה שוב אחרי שנייה
         return;
     }
 
-    try {
-        // חכה להתחלה של OneSignal
-        await OneSignal.init({ appId: "YOUR_ONESIGNAL_APP_ID" });
-        
-        // בדוק אם יש אישור התראות
-        const permission = await OneSignal.Notifications.permission;
-        let isEnabled = permission;
-        
-        // הוסף אופציה לתפריט
-        const menuPanel = document.querySelector('.menu-panel');
-        if (menuPanel) {
-            const notificationOption = document.createElement('div');
-            notificationOption.className = 'menu-option';
-            
-            const notificationSpan = document.createElement('span');
-            notificationSpan.textContent = 'התראות ערב';
-            
-            const notificationButton = document.createElement('button');
-            notificationButton.className = 'notification-toggle';
-            notificationButton.id = 'notification-toggle';
+    // הוסף אופציה לתפריט
+    const menuPanel = document.querySelector('.menu-panel');
+    if (!menuPanel) return;
+
+    const notificationOption = document.createElement('div');
+    notificationOption.className = 'menu-option';
+    
+    const notificationSpan = document.createElement('span');
+    notificationSpan.textContent = 'התראות ערב';
+    
+    const notificationButton = document.createElement('button');
+    notificationButton.className = 'notification-toggle';
+    notificationButton.id = 'notification-toggle';
+    
+    // ברירת מחדל - כאילו אין התראות
+    notificationButton.textContent = '🔕';
+    notificationButton.style.backgroundColor = '#888';
+    notificationButton.style.color = 'white';
+    
+    // נסה לבדוק את מצב ההתראות בכל דרך אפשרית
+    OneSignal.push(function() {
+        // נסה דרך getNotificationPermission (גרסאות ישנות יותר)
+        if (typeof OneSignal.getNotificationPermission === 'function') {
+            OneSignal.getNotificationPermission().then(function(permission) {
+                const isEnabled = permission === 'granted';
+                notificationButton.textContent = isEnabled ? '🔔' : '🔕';
+                notificationButton.style.backgroundColor = isEnabled ? 'var(--success)' : '#888';
+            });
+        } 
+        // נסה לבדוק ישירות permission (גרסאות חדשות)
+        else if (typeof OneSignal.Notifications !== 'undefined' && 
+                 typeof OneSignal.Notifications.permission !== 'undefined') {
+            const isEnabled = OneSignal.Notifications.permission;
             notificationButton.textContent = isEnabled ? '🔔' : '🔕';
             notificationButton.style.backgroundColor = isEnabled ? 'var(--success)' : '#888';
-            notificationButton.style.color = 'white';
-            
-            notificationOption.appendChild(notificationSpan);
-            notificationOption.appendChild(notificationButton);
-            menuPanel.appendChild(notificationOption);
-            
-            // הוסף מאזין לכפתור
-            notificationButton.addEventListener('click', async function() {
-                if (!isEnabled) {
-                    // בקש אישור
-                    await OneSignal.Notifications.requestPermission();
-                    
-                    // בדוק אם האישור התקבל
-                    const newPermission = await OneSignal.Notifications.permission;
-                    isEnabled = newPermission;
-                    
-                    notificationButton.textContent = isEnabled ? '🔔' : '🔕';
-                    notificationButton.style.backgroundColor = isEnabled ? 'var(--success)' : '#888';
-                } else {
-                    // בטל רישום
-                    await OneSignal.User.PushSubscription.optOut();
-                    isEnabled = false;
-                    
-                    notificationButton.textContent = '🔕';
-                    notificationButton.style.backgroundColor = '#888';
-                }
-                
-                // סגור את התפריט
-                document.getElementById('floating-menu').classList.remove('open');
+        }
+        // נסה ב-isPushNotificationsEnabled (גרסאות ישנות מאוד)
+        else if (typeof OneSignal.isPushNotificationsEnabled === 'function') {
+            OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+                notificationButton.textContent = isEnabled ? '🔔' : '🔕';
+                notificationButton.style.backgroundColor = isEnabled ? 'var(--success)' : '#888';
             });
         }
-    } catch (error) {
-        console.error('שגיאה בהגדרת כפתור התראות:', error);
-    }
+    });
+    
+    notificationOption.appendChild(notificationSpan);
+    notificationOption.appendChild(notificationButton);
+    menuPanel.appendChild(notificationOption);
+    
+    // הוסף מאזין לכפתור
+    notificationButton.addEventListener('click', function() {
+        // סגור את התפריט
+        document.getElementById('floating-menu').classList.remove('open');
+        
+        // הפעל בקשת התראות
+        OneSignal.push(function() {
+            // גרסה 5.0+
+            if (typeof OneSignal.showNativePrompt === 'function') {
+                OneSignal.showNativePrompt();
+            } 
+            // גרסה 6.0+
+            else if (typeof OneSignal.Notifications !== 'undefined' && 
+                     typeof OneSignal.Notifications.requestPermission === 'function') {
+                OneSignal.Notifications.requestPermission();
+            }
+            // גרסה מאוד ישנה
+            else if (typeof OneSignal.registerForPushNotifications === 'function') {
+                OneSignal.registerForPushNotifications();
+            }
+            
+            // אחרי 3 שניות, נסה לבדוק שוב את המצב
+            setTimeout(function() {
+                OneSignal.push(function() {
+                    // בדיקה בכל הדרכים האפשריות
+                    if (typeof OneSignal.getNotificationPermission === 'function') {
+                        OneSignal.getNotificationPermission().then(function(permission) {
+                            const isEnabled = permission === 'granted';
+                            notificationButton.textContent = isEnabled ? '🔔' : '🔕';
+                            notificationButton.style.backgroundColor = isEnabled ? 'var(--success)' : '#888';
+                        });
+                    } else if (typeof OneSignal.Notifications !== 'undefined' && 
+                              typeof OneSignal.Notifications.permission !== 'undefined') {
+                        const isEnabled = OneSignal.Notifications.permission;
+                        notificationButton.textContent = isEnabled ? '🔔' : '🔕';
+                        notificationButton.style.backgroundColor = isEnabled ? 'var(--success)' : '#888';
+                    } else if (typeof OneSignal.isPushNotificationsEnabled === 'function') {
+                        OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+                            notificationButton.textContent = isEnabled ? '🔔' : '🔕';
+                            notificationButton.style.backgroundColor = isEnabled ? 'var(--success)' : '#888';
+                        });
+                    }
+                });
+            }, 3000);
+        });
+    });
 }
 
 
