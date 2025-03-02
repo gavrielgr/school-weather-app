@@ -561,7 +561,7 @@ function addNotificationButton() {
         });
     }
 });
-
+}
 
 // פונקציה לאתחול התפריט הצף
 function initFloatingMenu() {
