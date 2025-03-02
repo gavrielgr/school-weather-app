@@ -3,6 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+     <!-- OneSignal Web Push -->
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script>
+        window.OneSignal = window.OneSignal || [];
+        OneSignal.push(function() {
+            OneSignal.init({
+                appId: "58800e0d-017a-4a21-9381-3b569059ca9d", // החלף ב-APP ID שלך מ-OneSignal
+                // אפשרויות מתקדמות נוספות
+                notifyButton: {
+                    enable: false, // כי אנחנו יוצרים כפתור מותאם אישית
+                },
+                // הגדרת AutoResubscribe כ-true בכדי שהמשתמשים יוכלו להירשם מחדש אוטומטית
+                autoResubscribe: true,
+                welcomeNotification: {
+                    title: "תודה על ההרשמה!",
+                    message: "מעכשיו תקבל התראות לגבי מה ללבוש מחר לבית הספר"
+                },
+                promptOptions: {
+                    // אפשרויות עבור חלון האישור המקורי
+                    slidedown: {
+                        enabled: true,
+                        autoPrompt: false,
+                        timeDelay: 20,
+                        pageViews: 2
+                    },
+                    customlink: {
+                        enabled: true,
+                        style: "button",
+                        size: "medium",
+                        color: {
+                            button: "#4D96FF",
+                            text: "#FFFFFF",
+                        },
+                        text: {
+                            subscribe: "הירשם להתראות",
+                            unsubscribe: "ביטול התראות",
+                        },
+                        unsubscribeEnabled: true,
+                    },
+                },
+            });
+        });
+    </script>
+    
     <title>מה ללבוש לבית הספר מחר?</title>
     
     <!-- PWA meta tags -->
