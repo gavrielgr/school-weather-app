@@ -465,22 +465,20 @@ function initDOMElements() {
     initFloatingMenu();
 }
 
-// פונקציה להוספת כפתור הרשמה להתראות
-function addNotificationButton() {
-    // בדוק אם OneSignal זמין
+async function addNotificationButton() {
     if (typeof OneSignal === 'undefined') {
         console.log('OneSignal לא נטען עדיין');
         return;
     }
 
-    // בדוק אם יש תמיכה בהתראות
-    if (!('Notification' in window)) {
-        console.log('דפדפן זה לא תומך בהתראות');
-        return;
-    }
-
-    // בדוק אם כבר נרשם להתראות
-    OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+    try {
+        // חכה להתחלה של OneSignal
+        await OneSignal.init({ appId: "YOUR_ONESIGNAL_APP_ID" });
+        
+        // בדוק אם יש אישור התראות
+        const permission = await OneSignal.Notifications.permission;
+        let isEnabled = permission;
+        
         // הוסף אופציה לתפריט
         const menuPanel = document.querySelector('.menu-panel');
         if (menuPanel) {
@@ -502,32 +500,33 @@ function addNotificationButton() {
             menuPanel.appendChild(notificationOption);
             
             // הוסף מאזין לכפתור
-            notificationButton.addEventListener('click', function() {
-                // אם עדיין לא נרשם, הצג חלון הרשמה
+            notificationButton.addEventListener('click', async function() {
                 if (!isEnabled) {
-                    OneSignal.showNativePrompt();
+                    // בקש אישור
+                    await OneSignal.Notifications.requestPermission();
                     
-                    // עדכן את הממשק אחרי שנייה (זמן לחלון אישור)
-                    setTimeout(function() {
-                        OneSignal.isPushNotificationsEnabled(function(newIsEnabled) {
-                            notificationButton.textContent = newIsEnabled ? '🔔' : '🔕';
-                            notificationButton.style.backgroundColor = newIsEnabled ? 'var(--success)' : '#888';
-                            isEnabled = newIsEnabled;
-                        });
-                    }, 3000);
+                    // בדוק אם האישור התקבל
+                    const newPermission = await OneSignal.Notifications.permission;
+                    isEnabled = newPermission;
+                    
+                    notificationButton.textContent = isEnabled ? '🔔' : '🔕';
+                    notificationButton.style.backgroundColor = isEnabled ? 'var(--success)' : '#888';
                 } else {
-                    // אם כבר נרשם, הצג אפשרות לביטול רישום
-                    OneSignal.setSubscription(false);
+                    // בטל רישום
+                    await OneSignal.User.PushSubscription.optOut();
+                    isEnabled = false;
+                    
                     notificationButton.textContent = '🔕';
                     notificationButton.style.backgroundColor = '#888';
-                    isEnabled = false;
                 }
                 
                 // סגור את התפריט
                 document.getElementById('floating-menu').classList.remove('open');
             });
         }
-    });
+    } catch (error) {
+        console.error('שגיאה בהגדרת כפתור התראות:', error);
+    }
 }
 
 
